@@ -1,0 +1,24 @@
+{
+  "name": "tcc",
+  "version": "0.1.0",
+  "author": "Marcelo Nicaretta",
+  "license": "MIT",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack",
+    "dev": "cross-env NODE_ENV=development webpack serve"
+  },
+  "dependencies": {
+    "phaser": "^3.54.0"
+  },
+  "devDependencies": {
+    "@types/node": "^15.3.0",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "cross-env": "^7.0.3",
+    "html-webpack-plugin": "^5.3.1",
+    "ts-loader": "^9.1.2",
+    "typescript": "^4.2.4",
+    "webpack": "^5.37.0",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
