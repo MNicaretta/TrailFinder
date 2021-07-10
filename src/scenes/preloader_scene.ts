@@ -27,6 +27,8 @@ export default class PreloaderScene extends Phaser.Scene {
 
     this.background = this.add.image(0, 0, 'dev_background');
     this.background.setOrigin(0);
+    this.background.displayWidth = Math.max(this.background.width, width);
+    this.background.displayHeight = Math.max(this.background.height, height);
 
     this.logo = this.add.image(width / 2, (height * 2 / 3) / 2, 'dev_logo');
     this.scaleObject(this.logo, width, height * 2 / 3, 50, 1);
