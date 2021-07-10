@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV == 'production' ? 'production' : 'development',
@@ -13,6 +14,10 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.(png|svg|jgp|jpeg|gif)$/i,
+        type: 'asset/resource'
+      }
     ],
   },
   resolve: {
@@ -29,6 +34,16 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.join(__dirname, 'src', 'public'),
+          globOptions: {
+            ignore: ['**/*.html']
+          }
+        }
+      ]
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'public', 'index.html'),
     }),
