@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import Player0 from '../assets/images/player_0.png';
 import Player1 from '../assets/images/player_1.png';
 import Player2 from '../assets/images/player_2.png';
-import Big from '../assets/images/big.png';
 
 export default class PreloaderScene extends Phaser.Scene {
   private readyCount: number;
@@ -14,6 +13,8 @@ export default class PreloaderScene extends Phaser.Scene {
   private progressBox: Phaser.GameObjects.Graphics;
   private percentText: Phaser.GameObjects.Text;
 
+  private gameSize: Phaser.Structs.Size;
+
   constructor() {
     super('Preloader');
   }
@@ -23,7 +24,9 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   preload() {
-    const { width, height } = this.sys.game.scale.gameSize;
+    this.gameSize = this.sys.game.scale.gameSize;
+
+    const { width, height } = this.gameSize;
 
     this.background = this.add.image(0, 0, 'dev_background');
     this.background.setOrigin(0);
@@ -33,9 +36,6 @@ export default class PreloaderScene extends Phaser.Scene {
     this.logo = this.add.image(width / 2, (height * 2 / 3) / 2, 'dev_logo');
     this.scaleObject(this.logo, width, height * 2 / 3, 50, 1);
 
-    this.progressBar = this.add.graphics();
-    this.scaleObject(this.progressBar, width, height * 2 / 3, 150, 1);
-
     this.progressBox = this.add.graphics();
     this.progressBox.setData('width', this.logo.displayWidth * 0.8);
     this.progressBox.setData('height', this.progressBox.getData('width') / 10);
@@ -44,6 +44,8 @@ export default class PreloaderScene extends Phaser.Scene {
                               height * 2 / 3,
                               this.progressBox.getData('width'),
                               this.progressBox.getData('height'));
+
+    this.progressBar = this.add.graphics();
 
     this.percentText = this.make.text({
       x: width / 2,
@@ -57,28 +59,9 @@ export default class PreloaderScene extends Phaser.Scene {
     });
     this.percentText.setOrigin(0.5);
 
-    this.load.on(Phaser.Loader.Events.PROGRESS, (value: number) => {
-      this.percentText.setText(new Intl.NumberFormat(window.navigator.language, { style: 'percent' }).format(value));
+    this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
-      this.progressBar.clear();
-      this.progressBar.fillStyle(0xffffff, 1);
-      this.progressBar.setData('progress', value);
-      this.progressBar.setData('width', this.progressBox.getData('width') * 0.95 * this.progressBar.getData('progress'));
-      this.progressBar.setData('height', this.progressBox.getData('height') * 0.8);
-      this.progressBar.fillRect((width - this.progressBar.getData('width')) / 2,
-                                height * 2 / 3 + (this.progressBox.getData('height') / 2) - (this.progressBar.getData('height') / 2),
-                                this.progressBar.getData('width'),
-                                this.progressBar.getData('height'));
-    });
-
-    this.load.on(Phaser.Loader.Events.COMPLETE, () => {
-      // progressBar.destroy();
-      // progressBox.destroy();
-      // loadingText.destroy();
-      // percentText.destroy();
-      // assetText.destroy();
-      // this.ready();
-    });
+    this.load.on(Phaser.Loader.Events.COMPLETE, this.complete, this);
 
     this.load.spritesheet('player_0', Player0, {
       frameWidth: 32,
@@ -131,13 +114,38 @@ export default class PreloaderScene extends Phaser.Scene {
     return ratio * currentDevicePixelRatio;	
   }
 
+  progress(value: number) {
+    const { width, height } = this.gameSize;
+
+    this.percentText.setText(new Intl.NumberFormat(window.navigator.language, { style: 'percent' }).format(value));
+
+    this.progressBar.clear();
+    this.progressBar.fillStyle(0xffffff, 1);
+    this.progressBar.setData('progress', value);
+    this.progressBar.setData('width', this.progressBox.getData('width') * 0.95 * this.progressBar.getData('progress'));
+    this.progressBar.setData('height', this.progressBox.getData('height') * 0.8);
+    this.progressBar.fillRect((width - this.progressBar.getData('width')) / 2,
+                              height * 2 / 3 + (this.progressBox.getData('height') / 2) - (this.progressBar.getData('height') / 2),
+                              this.progressBar.getData('width'),
+                              this.progressBar.getData('height'));
+  }
+
+  complete() {
+    this.progressBar.destroy();
+    this.progressBox.destroy();
+    this.percentText.destroy();
+    this.ready();
+  }
+
   resize(gameSize: Phaser.Structs.Size) {
-    const { width, height } = gameSize;
+    this.gameSize = gameSize;
+
+    const { width, height } = this.gameSize;
 
     this.background.displayWidth = Math.max(this.background.width, width);
     this.background.displayHeight = Math.max(this.background.height, height);
 
-    this.scaleObject(this.logo, gameSize.width, gameSize.height / 2, 50, 1);
+    this.scaleObject(this.logo, width, height / 2, 50, 1);
     this.logo.x = width / 2;
     this.logo.y = (height * 2 / 3) / 2;
 
