@@ -2,13 +2,11 @@ import Phaser from 'phaser';
 import Controller from './scenes/controller';
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
-  title: 'Phaser 3 Setup',
+  title: 'Trail Finder',
   type: Phaser.AUTO,
   scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 1920,
-    height: 1080,
+    width: 320,
+    height: 320,
   },
   physics: {
     default: 'arcade',

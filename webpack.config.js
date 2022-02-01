@@ -15,7 +15,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(png|svg|jgp|jpeg|gif)$/i,
+        test: /\.(png|svg|jgp|jpeg|gif|json|csv)$/i,
         type: 'asset/resource'
       }
     ],

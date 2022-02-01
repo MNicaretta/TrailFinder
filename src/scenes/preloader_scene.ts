@@ -2,9 +2,15 @@ import Phaser from 'phaser';
 import Player0 from '../assets/images/player_0.png';
 import Player1 from '../assets/images/player_1.png';
 import Player2 from '../assets/images/player_2.png';
+import Sheet from '../assets/images/sheet.png';
+import TitleBackground from '../assets/tilemaps/title_background.json';
+import Title from '../assets/images/title.png';
+import Play from '../assets/images/play.png';
 
 export default class PreloaderScene extends Phaser.Scene {
   private readyCount: number;
+
+  private gameSize: Phaser.Structs.Size;
 
   private background: Phaser.GameObjects.Image;
   private logo: Phaser.GameObjects.Image;
@@ -13,14 +19,8 @@ export default class PreloaderScene extends Phaser.Scene {
   private progressBox: Phaser.GameObjects.Graphics;
   private percentText: Phaser.GameObjects.Text;
 
-  private gameSize: Phaser.Structs.Size;
-
   constructor() {
     super('Preloader');
-  }
-
-  init() {
-    this.readyCount = 0;
   }
 
   preload() {
@@ -59,22 +59,26 @@ export default class PreloaderScene extends Phaser.Scene {
     });
     this.percentText.setOrigin(0.5);
 
+    this.load.spritesheet('player_0', Player0, {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('player_1', Player1, {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('player_2', Player2, {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.image('sheet', Sheet);
+    this.load.image('title', Title);
+    this.load.image('play', Play);
+    this.load.tilemapTiledJSON('title_background', TitleBackground);
+
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
     this.load.on(Phaser.Loader.Events.COMPLETE, this.complete, this);
-
-    this.load.spritesheet('player_0', Player0, {
-      frameWidth: 32,
-      frameHeight: 32
-    });
-    this.load.spritesheet('player_1', Player1, {
-      frameWidth: 32,
-      frameHeight: 32
-    });
-    this.load.spritesheet('player_2', Player2, {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
 
     this.scale.on(Phaser.Scale.Events.RESIZE, this.resize, this);
   }
