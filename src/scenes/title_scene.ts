@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 
-export default class TitleScene extends Phaser.Scene {
-  private gameSize: Phaser.Structs.Size;
+import Scene from './scene';
+
+export default class TitleScene extends Scene {
 
   private title: Phaser.GameObjects.Image;
   private play: Phaser.GameObjects.Image;
@@ -20,54 +21,36 @@ export default class TitleScene extends Phaser.Scene {
     const tilemap = this.add.tilemap('title_background', 32, 32, 10, 10);
     const tileset = tilemap.addTilesetImage('sheet');
 
-    tilemap.createLayer('agua', tileset);
-    tilemap.createLayer('fundo', tileset);
-    tilemap.createLayer('montanha_1', tileset);
-    tilemap.createLayer('montanha_2', tileset);
-    tilemap.createLayer('escada', tileset);
-    tilemap.createLayer('chao', tileset);
+    for (const layer of tilemap.layers) {
+      tilemap.createLayer(layer.name, tileset);
+    }
 
     this.add.sprite(32 * 3, 32 * 6, 'player_1');
 
     this.title = this.add.image(width / 2, height * 0.15, 'title');
     this.scaleObject(this.title, width * 0.8, height * 0.3, 50, 1);
 
-    this.play = this.add.image(width / 2, height / 2, 'play');
+    this.play = this.add.image(width / 2, height / 2, 'play')
+                        .setInteractive({ useHandCursor: true })
+                        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.playTheGame, this);
     this.scaleObject(this.play, width * 0.3, height / 2, 50, 1);
   }
 
-  scaleObject(object: Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.Transform, availableWidth: number, availableHeight: number, padding: number, scaleMultiplier: number) {
-    const objectSize = this.getObjectSize(object);
-    const scale = this.calcObjectScale(objectSize.width, objectSize.height, availableWidth, availableHeight, padding);
+  resize(gameSize: Phaser.Structs.Size) {
+    this.gameSize = gameSize;
 
-    object.scale = scale * scaleMultiplier;
+    const { width, height } = this.gameSize;
+
+    this.scaleObject(this.play, width * 0.3, height / 2, 50, 1);
+    this.play.x = width / 2;
+    this.play.y = height / 2;
+
+    this.scaleObject(this.title, width * 0.8, height * 0.3, 50, 1);
+    this.title.x = width / 2;
+    this.title.y = height * 0.15;
   }
 
-  getObjectSize(object: Phaser.GameObjects.GameObject & Partial<Phaser.GameObjects.Components.Size>) {
-    if (object.width && object.height) {
-      return {
-        width: object.width,
-        height: object.height
-      }
-    } else {
-      return {
-        width: parseFloat(object.getData('width') ?? 0),
-        height: parseFloat(object.getData('height') ?? 0)
-      }
-    }
-  }
-
-  calcObjectScale(width: number, height: number, availableWidth: number, availableHeight: number, padding: number) {
-    let ratio = 1;
-    const currentDevicePixelRatio = window.devicePixelRatio;
-    // Sprite needs to fit in either width or height
-    const widthRatio = (width * currentDevicePixelRatio + 2 * padding) / availableWidth;
-    const heightRatio = (height * currentDevicePixelRatio + 2 * padding) / availableHeight;
-
-    if (widthRatio > 1 || heightRatio > 1) {
-      ratio = 1 / Math.max(widthRatio, heightRatio);
-    }
-
-    return ratio * currentDevicePixelRatio;	
+  playTheGame() {
+    this.scene.start('Game');
   }
 }

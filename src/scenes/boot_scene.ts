@@ -1,8 +1,8 @@
-import Phaser from 'phaser';
+import Scene from './scene';
 import DevLogo from '../assets/images/dev_logo.png';
 import DevBackground from '../assets/images/dev_background.png';
 
-export default class BootScene extends Phaser.Scene {
+export default class BootScene extends Scene {
   constructor() {
     super('Boot');
   }

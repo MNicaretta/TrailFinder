@@ -1,16 +1,20 @@
 import Phaser from 'phaser';
+
+import Scene from './scene';
+
 import Player0 from '../assets/images/player_0.png';
 import Player1 from '../assets/images/player_1.png';
 import Player2 from '../assets/images/player_2.png';
+
 import Sheet from '../assets/images/sheet.png';
-import TitleBackground from '../assets/tilemaps/title_background.json';
 import Title from '../assets/images/title.png';
 import Play from '../assets/images/play.png';
 
-export default class PreloaderScene extends Phaser.Scene {
-  private readyCount: number;
+import TitleBackground from '../assets/tilemaps/title_background.json';
+import Phase1 from '../assets/tilemaps/phase_1.json';
 
-  private gameSize: Phaser.Structs.Size;
+export default class PreloaderScene extends Scene {
+  private readyCount: number;
 
   private background: Phaser.GameObjects.Image;
   private logo: Phaser.GameObjects.Image;
@@ -74,48 +78,15 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.image('sheet', Sheet);
     this.load.image('title', Title);
     this.load.image('play', Play);
+
     this.load.tilemapTiledJSON('title_background', TitleBackground);
+    this.load.tilemapTiledJSON('phase_1', Phase1);
 
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
     this.load.on(Phaser.Loader.Events.COMPLETE, this.complete, this);
 
     this.scale.on(Phaser.Scale.Events.RESIZE, this.resize, this);
-  }
-
-  scaleObject(object: Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.Transform, availableWidth: number, availableHeight: number, padding: number, scaleMultiplier: number) {
-    const objectSize = this.getObjectSize(object);
-    const scale = this.calcObjectScale(objectSize.width, objectSize.height, availableWidth, availableHeight, padding);
-
-    object.scale = scale * scaleMultiplier;
-  }
-
-  getObjectSize(object: Phaser.GameObjects.GameObject & Partial<Phaser.GameObjects.Components.Size>) {
-    if (object.width && object.height) {
-      return {
-        width: object.width,
-        height: object.height
-      }
-    } else {
-      return {
-        width: parseFloat(object.getData('width') ?? 0),
-        height: parseFloat(object.getData('height') ?? 0)
-      }
-    }
-  }
-
-  calcObjectScale(width: number, height: number, availableWidth: number, availableHeight: number, padding: number) {
-    let ratio = 1;
-    const currentDevicePixelRatio = window.devicePixelRatio;
-    // Sprite needs to fit in either width or height
-    const widthRatio = (width * currentDevicePixelRatio + 2 * padding) / availableWidth;
-    const heightRatio = (height * currentDevicePixelRatio + 2 * padding) / availableHeight;
-
-    if (widthRatio > 1 || heightRatio > 1) {
-      ratio = 1 / Math.max(widthRatio, heightRatio);
-    }
-
-    return ratio * currentDevicePixelRatio;	
   }
 
   progress(value: number) {
