@@ -14,14 +14,14 @@ import TitleBackground from '../assets/tilemaps/title_background.json';
 import Phase1 from '../assets/tilemaps/phase_1.json';
 
 export default class PreloaderScene extends Scene {
-  private readyCount: number;
+  private readyCount: number = 0;
 
-  private background: Phaser.GameObjects.Image;
-  private logo: Phaser.GameObjects.Image;
+  private background?: Phaser.GameObjects.Image;
+  private logo?: Phaser.GameObjects.Image;
 
-  private progressBar: Phaser.GameObjects.Graphics;
-  private progressBox: Phaser.GameObjects.Graphics;
-  private percentText: Phaser.GameObjects.Text;
+  private progressBar?: Phaser.GameObjects.Graphics;
+  private progressBox?: Phaser.GameObjects.Graphics;
+  private percentText?: Phaser.GameObjects.Text;
 
   constructor() {
     super('Preloader');
@@ -37,23 +37,25 @@ export default class PreloaderScene extends Scene {
     this.background.displayWidth = Math.max(this.background.width, width);
     this.background.displayHeight = Math.max(this.background.height, height);
 
-    this.logo = this.add.image(width / 2, (height * 2 / 3) / 2, 'dev_logo');
-    this.scaleObject(this.logo, width, height * 2 / 3, 50, 1);
+    this.logo = this.add.image(width / 2, (height * 2) / 3 / 2, 'dev_logo');
+    this.scaleObject(this.logo, width, (height * 2) / 3, 50, 1);
 
     this.progressBox = this.add.graphics();
     this.progressBox.setData('width', this.logo.displayWidth * 0.8);
     this.progressBox.setData('height', this.progressBox.getData('width') / 10);
     this.progressBox.fillStyle(0x222222, 0.8);
-    this.progressBox.fillRect((width - this.progressBox.getData('width')) / 2,
-                              height * 2 / 3,
-                              this.progressBox.getData('width'),
-                              this.progressBox.getData('height'));
+    this.progressBox.fillRect(
+      (width - this.progressBox.getData('width')) / 2,
+      (height * 2) / 3,
+      this.progressBox.getData('width'),
+      this.progressBox.getData('height')
+    );
 
     this.progressBar = this.add.graphics();
 
     this.percentText = this.make.text({
       x: width / 2,
-      y: height * 2 / 3 + this.progressBox.getData('height') / 2,
+      y: (height * 2) / 3 + this.progressBox.getData('height') / 2,
       text: '0%',
       style: {
         fontSize: `${this.progressBox.getData('height') / 3}px`,
@@ -90,25 +92,47 @@ export default class PreloaderScene extends Scene {
   }
 
   progress(value: number) {
-    const { width, height } = this.gameSize;
+    if (this.gameSize) {
+      const { width, height } = this.gameSize;
 
-    this.percentText.setText(new Intl.NumberFormat(window.navigator.language, { style: 'percent' }).format(value));
+      if (this.percentText) {
+        this.percentText.setText(
+          new Intl.NumberFormat(window.navigator.language, {
+            style: 'percent',
+          }).format(value)
+        );
+      }
 
-    this.progressBar.clear();
-    this.progressBar.fillStyle(0xffffff, 1);
-    this.progressBar.setData('progress', value);
-    this.progressBar.setData('width', this.progressBox.getData('width') * 0.95 * this.progressBar.getData('progress'));
-    this.progressBar.setData('height', this.progressBox.getData('height') * 0.8);
-    this.progressBar.fillRect((width - this.progressBar.getData('width')) / 2,
-                              height * 2 / 3 + (this.progressBox.getData('height') / 2) - (this.progressBar.getData('height') / 2),
-                              this.progressBar.getData('width'),
-                              this.progressBar.getData('height'));
+      if (this.progressBar) {
+        this.progressBar.clear();
+        this.progressBar.fillStyle(0xffffff, 1);
+        this.progressBar.setData('progress', value);
+        this.progressBar.setData(
+          'width',
+          this.progressBox?.getData('width') *
+            0.95 *
+            this.progressBar.getData('progress')
+        );
+        this.progressBar.setData(
+          'height',
+          this.progressBox?.getData('height') * 0.8
+        );
+        this.progressBar.fillRect(
+          (width - this.progressBar.getData('width')) / 2,
+          (height * 2) / 3 +
+            this.progressBox?.getData('height') / 2 -
+            this.progressBar.getData('height') / 2,
+          this.progressBar.getData('width'),
+          this.progressBar.getData('height')
+        );
+      }
+    }
   }
 
   complete() {
-    this.progressBar.destroy();
-    this.progressBox.destroy();
-    this.percentText.destroy();
+    this.progressBar?.destroy();
+    this.progressBox?.destroy();
+    this.percentText?.destroy();
     this.ready();
   }
 
@@ -117,34 +141,62 @@ export default class PreloaderScene extends Scene {
 
     const { width, height } = this.gameSize;
 
-    this.background.displayWidth = Math.max(this.background.width, width);
-    this.background.displayHeight = Math.max(this.background.height, height);
+    if (this.background) {
+      this.background.displayWidth = Math.max(this.background.width, width);
+      this.background.displayHeight = Math.max(this.background.height, height);
+    }
 
-    this.scaleObject(this.logo, width, height / 2, 50, 1);
-    this.logo.x = width / 2;
-    this.logo.y = (height * 2 / 3) / 2;
+    if (this.logo) {
+      this.scaleObject(this.logo, width, height / 2, 50, 1);
+      this.logo.x = width / 2;
+      this.logo.y = (height * 2) / 3 / 2;
+    }
 
-    this.progressBox.clear();
-    this.progressBox.setData('width', this.logo.displayWidth * 0.8);
-    this.progressBox.setData('height', this.progressBox.getData('width') / 10);
-    this.progressBox.fillStyle(0x222222, 0.8);
-    this.progressBox.fillRect((width - this.progressBox.getData('width')) / 2,
-                              height * 2 / 3,
-                              this.progressBox.getData('width'),
-                              this.progressBox.getData('height'));
+    if (this.progressBox) {
+      this.progressBox.clear();
+      this.progressBox.setData('width', this.logo?.displayWidth ?? 0 * 0.8);
+      this.progressBox.setData(
+        'height',
+        this.progressBox.getData('width') / 10
+      );
+      this.progressBox.fillStyle(0x222222, 0.8);
+      this.progressBox.fillRect(
+        (width - this.progressBox.getData('width')) / 2,
+        (height * 2) / 3,
+        this.progressBox.getData('width'),
+        this.progressBox.getData('height')
+      );
+    }
 
-    this.progressBar.clear();
-    this.progressBar.fillStyle(0xffffff, 1);
-    this.progressBar.setData('width', this.progressBox.getData('width') * 0.95 * this.progressBar.getData('progress'));
-    this.progressBar.setData('height', this.progressBox.getData('height') * 0.8);
-    this.progressBar.fillRect((width - this.progressBar.getData('width')) / 2,
-                              height * 2 / 3 + (this.progressBox.getData('height') / 2) - (this.progressBar.getData('height') / 2),
-                              this.progressBar.getData('width'),
-                              this.progressBar.getData('height'));
+    if (this.progressBar) {
+      this.progressBar.clear();
+      this.progressBar.fillStyle(0xffffff, 1);
+      this.progressBar.setData(
+        'width',
+        this.progressBox?.getData('width') *
+          0.95 *
+          this.progressBar.getData('progress')
+      );
+      this.progressBar.setData(
+        'height',
+        this.progressBox?.getData('height') * 0.8
+      );
+      this.progressBar.fillRect(
+        (width - this.progressBar.getData('width')) / 2,
+        (height * 2) / 3 +
+          this.progressBox?.getData('height') / 2 -
+          this.progressBar.getData('height') / 2,
+        this.progressBar.getData('width'),
+        this.progressBar.getData('height')
+      );
+    }
 
-    this.percentText.x = width / 2;
-    this.percentText.y = height * 2 / 3 + this.progressBox.getData('height') / 2;
-    this.percentText.setFontSize(this.progressBox.getData('height') / 3);
+    if (this.percentText) {
+      this.percentText.x = width / 2;
+      this.percentText.y =
+        (height * 2) / 3 + this.progressBox?.getData('height') / 2;
+      this.percentText.setFontSize(this.progressBox?.getData('height') / 3);
+    }
   }
 
   ready() {
