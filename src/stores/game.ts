@@ -21,9 +21,9 @@ export const useGameStore = defineStore({
     build() {
       this.state = GameState.BUILDING;
     },
-    addMove(move: Move) {
-      if (move) {
-        this.moves.push(move);
+    setMoves(moves: Move[]) {
+      if (moves) {
+        this.moves = moves;
       }
     },
     shiftMove() {

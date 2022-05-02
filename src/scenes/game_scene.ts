@@ -11,6 +11,7 @@ export default class GameScene extends Scene {
   private end?: Phaser.Tilemaps.Tile;
 
   private grid?: Phaser.GameObjects.Grid;
+  private text?: Phaser.GameObjects.Text;
 
   private player?: Phaser.GameObjects.Sprite;
   private gameStore = useGameStore();
@@ -26,7 +27,7 @@ export default class GameScene extends Scene {
 
     this.loadTilemap('phase_1');
 
-    const config = {
+    const walkConfig = {
       key: 'walk',
       frames: this.anims.generateFrameNumbers('player_1', {
         start: TilesetConst.WALK_START,
@@ -36,7 +37,18 @@ export default class GameScene extends Scene {
       repeat: -1,
     };
 
-    this.anims.create(config);
+    const climbConfig = {
+      key: 'climb',
+      frames: this.anims.generateFrameNumbers('player_1', {
+        start: TilesetConst.CLIMB_START,
+        end: TilesetConst.CLIMB_END,
+      }),
+      frameRate: 5,
+      repeat: -1,
+    };
+
+    this.anims.create(walkConfig);
+    this.anims.create(climbConfig);
 
     if (this.start) {
       this.player = this.add.sprite(
@@ -58,6 +70,18 @@ export default class GameScene extends Scene {
       0x3c3c3c,
       0x1f
     );
+
+    this.text = this.add.text(
+      this.gameSize.width / 2,
+      this.gameSize.height / 4,
+      'SUCCESS',
+      {
+        fontFamily: 'Minecraft',
+        fontSize: '40px',
+      }
+    );
+    this.text.setOrigin(0.5);
+    this.text.visible = false;
   }
 
   update(_: number, delta: number) {
@@ -84,7 +108,8 @@ export default class GameScene extends Scene {
 
         // validar o movimento
 
-        this.player.anims.play(this.player.x ? 'walk' : 'climb');
+        this.player.anims.play(currentMove.x ? 'walk' : 'climb');
+        this.player.flipX = currentMove.x === -1;
       }
 
       const diff_x =
@@ -96,29 +121,41 @@ export default class GameScene extends Scene {
 
       if (diff_x > 0 || diff_y > 0) {
         this.player.anims.stop();
+        this.player.setFrame(0);
         this.gameStore.shiftMove();
       }
     } else {
-      // esta no fim
+      let isAtEnd = false;
+
+      if (this.player && this.end) {
+        isAtEnd =
+          Math.floor(this.player.x / TilesetConst.SIZE) === this.end.x &&
+          Math.floor(this.player.y / TilesetConst.SIZE) === this.end.y;
+      }
+
+      if (this.text) {
+        this.text.visible = true;
+        this.text.text = isAtEnd ? 'SUCCESS' : 'FAILED';
+      }
     }
 
     if (this.player && this.player.anims.isPlaying) {
-      this.player.x += (currentMove.x * delta) / 10;
-      this.player.y += (currentMove.y * delta) / 10;
+      this.player.x += (currentMove.x * delta) / 16;
+      this.player.y += (currentMove.y * delta) / 16;
     }
   }
 
   private reset() {
     if (this.player) {
       this.player.anims.stop();
+      this.player.setFrame(0);
 
       this.player.x = TilesetConst.SIZE * (this.start?.x ?? 0) + 16;
       this.player.y = TilesetConst.SIZE * (this.start?.y ?? 0);
     }
 
-    if (this.grid) {
-      this.grid.visible = true;
-    }
+    if (this.text) this.text.visible = false;
+    if (this.grid) this.grid.visible = true;
   }
 
   private loadTilemap(key: string) {

@@ -18,16 +18,30 @@ export default defineComponent({
       moves: [] as DefaultMoves[],
     }
   },
-  computed: {
-    isEditable() {
-      return true;
-    }
-  },
   beforeMount () {
     window.addEventListener('keydown', this.handleKeydown);
   },
   beforeDestroy () {
     window.removeEventListener('keydown', this.handleKeydown);
+  },
+  computed: {
+    playButtonClasses(): any {
+      return {
+        'controls__play--playing': this.gameStore.isPlaying,
+      };
+    },
+
+    playButtonText(): string {
+      if (this.gameStore.isBuilding) {
+        return 'START';
+      }
+
+      if (this.gameStore.isPlaying) {
+        return 'RESTART';
+      }
+
+      return '';
+    }
   },
   methods: {
     handleKeydown(e: KeyboardEvent) {
@@ -51,17 +65,21 @@ export default defineComponent({
         case "Backspace":
           this.remove();
           break;
+
+        case "Enter":
+          this.play();
+          break;
       }
     },
 
     add(move: DefaultMoves) {
-      if (this.isEditable) {
+      if (this.gameStore.isBuilding) {
         this.moves.push(move);
       }
     },
 
     remove(index?: number) {
-      if (this.isEditable) {
+      if (this.gameStore.isBuilding) {
         this.moves.splice(index ?? this.moves.length - 1, 1);
       }
     },
@@ -82,42 +100,50 @@ export default defineComponent({
       }
     },
 
+    togglePlay() {
+      if (this.gameStore.isBuilding) {
+        this.play()
+      } else if (this.gameStore.isPlaying) {
+        this.stop();
+      }
+    },
+
     play() {
-      this.moves.forEach(move => {
-        let newMove: Move;
-        switch (move) {
-          case DefaultMoves.UP:
-            newMove = {
-              x: 0,
-              y: -1,
-            };
-            break;
+      if (this.gameStore.isBuilding) {
+        this.gameStore.setMoves(this.moves.map(move => {
+          switch (move) {
+            case DefaultMoves.UP:
+              return {
+                x: 0,
+                y: -1,
+              };
 
-          case DefaultMoves.DOWN:
-            newMove = {
-              x: 0,
-              y: 1,
-            };
-            break;
+            case DefaultMoves.DOWN:
+              return {
+                x: 0,
+                y: 1,
+              };
 
-          case DefaultMoves.LEFT:
-            newMove = {
-              x: -1,
-              y: 0,
-            };
-            break;
+            case DefaultMoves.LEFT:
+              return {
+                x: -1,
+                y: 0,
+              };
 
-          case DefaultMoves.RIGHT:
-            newMove = {
-              x: 1,
-              y: 0,
-            };
-            break;
-        }
-        this.gameStore.addMove(newMove);
-      })
-      this.gameStore.play();
-    }
+            case DefaultMoves.RIGHT:
+              return {
+                x: 1,
+                y: 0,
+              };
+          }
+        }));
+        this.gameStore.play();
+      }
+    },
+
+    stop() {
+      this.gameStore.build();
+    },
   }
 })
 </script>
@@ -130,7 +156,7 @@ export default defineComponent({
               :name="getIconName(move)"
               @click="remove(index)"/>
     </div>
-    <div class="controls__play" @click="play">START</div>
+    <div class="controls__play" :class="playButtonClasses" @click="togglePlay">{{ playButtonText }}</div>
     <div class="controls__buttons">
       <mdicon size="80px" :name="getIconName(DefaultMoves.UP)" @click="add(DefaultMoves.UP)"/>
       <div style="width: 100%; height: 0px"></div>
@@ -166,8 +192,6 @@ export default defineComponent({
 }
 
 .controls__play {
-  background-color: green;
-
   padding: 5px 15px;
 
   font-size: 30px;
@@ -175,6 +199,14 @@ export default defineComponent({
 
   cursor: pointer;
   user-select: none;
+}
+
+.controls__play, .controls__play--success {
+  background-color: green;
+}
+
+.controls__play--playing, .controls__play--failed {
+  background-color: red;
 }
 
 .controls__buttons {

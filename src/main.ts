@@ -31,3 +31,9 @@ window.addEventListener('resize', _calculateScrollbarWidth, false);
 document.addEventListener('DOMContentLoaded', _calculateScrollbarWidth, false);
 // recalculate on load (assets loaded as well)
 window.addEventListener('load', _calculateScrollbarWidth);
+
+var minecraftFont = new FontFace('Minecraft', 'url(fonts/Minecraft.ttf)');
+
+minecraftFont.load().then(function (font) {
+  document.fonts.add(font);
+});
