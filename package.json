@@ -9,6 +9,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@mdi/js": "^6.6.96",
+    "mdi-vue": "^3.0.12",
     "phaser": "^3.55.2",
     "pinia": "^2.0.13",
     "vue": "^3.2.33"

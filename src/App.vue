@@ -1,8 +1,21 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { GameState } from '@/consts/game_state';
+import { useGameStore } from '@/stores/game';
+
+import Tutorial from "./components/Tutorial.vue";
+import Controls from './components/Controls.vue';
+
+const gameStore = useGameStore();
+
+function isLoading() {
+  return gameStore.state === GameState.LOADING;
+}
+</script>
 
 <template>
   <main>
-    <div class="controls"></div>
+    <Tutorial v-if="isLoading()"></Tutorial>
+    <Controls v-else></Controls>
   </main>
 </template>
 
@@ -17,8 +30,7 @@
 }
 
 main {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
 }
 </style>

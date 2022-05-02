@@ -1,4 +1,8 @@
 import Phaser from 'phaser';
+import type { Store } from 'pinia';
+
+import { useGameStore } from '@/stores/game';
+import { GameState } from '@/consts/game_state';
 
 import Scene from './scene';
 
@@ -6,8 +10,12 @@ export default class TitleScene extends Scene {
   private title?: Phaser.GameObjects.Image;
   private play?: Phaser.GameObjects.Image;
 
+  private gameStore: Store<'game', { state: GameState }>;
+
   constructor() {
     super('Title');
+
+    this.gameStore = useGameStore();
   }
 
   create() {
@@ -56,5 +64,6 @@ export default class TitleScene extends Scene {
 
   playTheGame() {
     this.scene.start('Game');
+    this.gameStore.state = GameState.BUILDING;
   }
 }
