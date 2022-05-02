@@ -1,4 +1,8 @@
 import Scene from './scene';
+import type { Store } from 'pinia';
+
+import { useGameStore } from '@/stores/game';
+import { GameState } from '@/consts/game_state';
 
 import { TilesetConst } from '../consts/tileset';
 
@@ -6,18 +10,13 @@ export default class GameScene extends Scene {
   private start?: Phaser.Tilemaps.Tile;
   private end?: Phaser.Tilemaps.Tile;
 
-  private moves: Move[] = [];
+  private grid?: Phaser.GameObjects.Grid;
 
   private player?: Phaser.GameObjects.Sprite;
+  private gameStore = useGameStore();
 
   constructor() {
     super('Game');
-
-    this.moves = [
-      { x: 1, y: 0 },
-      { x: 1, y: 0 },
-      { x: 1, y: 0 },
-    ];
   }
 
   create() {
@@ -46,10 +45,35 @@ export default class GameScene extends Scene {
         'player_1'
       );
     }
+
+    this.grid = this.add.grid(
+      this.gameSize.width / 2,
+      this.gameSize.height / 2,
+      this.gameSize.width,
+      this.gameSize.height,
+      TilesetConst.SIZE,
+      TilesetConst.SIZE,
+      0,
+      0,
+      0x3c3c3c,
+      0x1f
+    );
   }
 
   update(_: number, delta: number) {
-    const currentMove = this.moves[0];
+    if (this.gameStore.state === GameState.BUILDING) {
+      this.reset();
+    } else if (this.gameStore.state === GameState.PLAYING) {
+      this.play(delta);
+    }
+  }
+
+  private play(delta: number) {
+    if (this.grid) {
+      this.grid.visible = false;
+    }
+
+    const currentMove = this.gameStore.nextMove;
 
     if (this.player && currentMove) {
       if (!currentMove.start_x && !currentMove.start_y) {
@@ -72,7 +96,7 @@ export default class GameScene extends Scene {
 
       if (diff_x > 0 || diff_y > 0) {
         this.player.anims.stop();
-        this.moves.shift();
+        this.gameStore.shiftMove();
       }
     } else {
       // esta no fim
@@ -84,7 +108,20 @@ export default class GameScene extends Scene {
     }
   }
 
-  loadTilemap(key: string) {
+  private reset() {
+    if (this.player) {
+      this.player.anims.stop();
+
+      this.player.x = TilesetConst.SIZE * (this.start?.x ?? 0) + 16;
+      this.player.y = TilesetConst.SIZE * (this.start?.y ?? 0);
+    }
+
+    if (this.grid) {
+      this.grid.visible = true;
+    }
+  }
+
+  private loadTilemap(key: string) {
     const tilemap = this.add.tilemap(
       key,
       TilesetConst.SIZE,
@@ -100,5 +137,7 @@ export default class GameScene extends Scene {
 
     this.start = tilemap.findByIndex(TilesetConst.START);
     this.end = tilemap.findByIndex(TilesetConst.END);
+
+    this.gameStore.build();
   }
 }

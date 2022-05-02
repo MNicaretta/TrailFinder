@@ -10,12 +10,10 @@ export default class TitleScene extends Scene {
   private title?: Phaser.GameObjects.Image;
   private play?: Phaser.GameObjects.Image;
 
-  private gameStore: Store<'game', { state: GameState }>;
+  private gameStore = useGameStore();
 
   constructor() {
     super('Title');
-
-    this.gameStore = useGameStore();
   }
 
   create() {
@@ -64,6 +62,5 @@ export default class TitleScene extends Scene {
 
   playTheGame() {
     this.scene.start('Game');
-    this.gameStore.state = GameState.BUILDING;
   }
 }

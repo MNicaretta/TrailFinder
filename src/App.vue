@@ -7,14 +7,11 @@ import Controls from './components/Controls.vue';
 
 const gameStore = useGameStore();
 
-function isLoading() {
-  return gameStore.state === GameState.LOADING;
-}
 </script>
 
 <template>
   <main>
-    <Tutorial v-if="isLoading()"></Tutorial>
+    <Tutorial v-if="gameStore.isLoading"></Tutorial>
     <Controls v-else></Controls>
   </main>
 </template>

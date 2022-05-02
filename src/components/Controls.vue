@@ -2,10 +2,15 @@
 import { defineComponent } from 'vue'
 
 import { DefaultMoves } from '@/consts/default_moves'
+import { GameState } from '@/consts/game_state';
+
+import { useGameStore } from '@/stores/game';
 
 export default defineComponent({
   setup() {
-    return { DefaultMoves };
+    const gameStore = useGameStore();
+
+    return { DefaultMoves, gameStore };
   },
 
   data() {
@@ -77,34 +82,41 @@ export default defineComponent({
       }
     },
 
-    getMoves(): Move[] {
-      return this.moves.map(move => {
+    play() {
+      this.moves.forEach(move => {
+        let newMove: Move;
         switch (move) {
           case DefaultMoves.UP:
-            return {
+            newMove = {
               x: 0,
               y: -1,
             };
+            break;
 
           case DefaultMoves.DOWN:
-            return {
+            newMove = {
               x: 0,
               y: 1,
             };
+            break;
 
           case DefaultMoves.LEFT:
-            return {
+            newMove = {
               x: -1,
               y: 0,
             };
+            break;
 
           case DefaultMoves.RIGHT:
-            return {
+            newMove = {
               x: 1,
               y: 0,
             };
+            break;
         }
-      });
+        this.gameStore.addMove(newMove);
+      })
+      this.gameStore.play();
     }
   }
 })
@@ -118,7 +130,7 @@ export default defineComponent({
               :name="getIconName(move)"
               @click="remove(index)"/>
     </div>
-    <div class="controls__play">START</div>
+    <div class="controls__play" @click="play">START</div>
     <div class="controls__buttons">
       <mdicon size="80px" :name="getIconName(DefaultMoves.UP)" @click="add(DefaultMoves.UP)"/>
       <div style="width: 100%; height: 0px"></div>
