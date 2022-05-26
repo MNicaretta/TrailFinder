@@ -1,22 +1,19 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
-import { DefaultMoves } from '@/consts/default_moves'
-import { GameState } from '@/consts/game_state';
+import ControlButton from './ControlButton.vue';
 
 import { useGameStore } from '@/stores/game';
+import { MoveType } from '@/models/move';
 
 export default defineComponent({
   setup() {
     const gameStore = useGameStore();
 
-    return { DefaultMoves, gameStore };
+    return { gameStore, MoveType };
   },
-
-  data() {
-    return {
-      moves: [] as DefaultMoves[],
-    }
+  components: {
+    ControlButton
   },
   beforeMount () {
     window.addEventListener('keydown', this.handleKeydown);
@@ -25,12 +22,6 @@ export default defineComponent({
     window.removeEventListener('keydown', this.handleKeydown);
   },
   computed: {
-    playButtonClasses(): any {
-      return {
-        'controls__play--playing': this.gameStore.isPlaying,
-      };
-    },
-
     playButtonText(): string {
       if (this.gameStore.isBuilding) {
         return 'START';
@@ -47,19 +38,19 @@ export default defineComponent({
     handleKeydown(e: KeyboardEvent) {
       switch(e.key) {
         case "ArrowUp":
-          this.add(DefaultMoves.UP);
+          this.add(MoveType.UP);
           break;
 
         case "ArrowLeft":
-          this.add(DefaultMoves.LEFT);
+          this.add(MoveType.LEFT);
           break;
 
         case "ArrowDown":
-          this.add(DefaultMoves.DOWN);
+          this.add(MoveType.DOWN);
           break;
 
         case "ArrowRight":
-          this.add(DefaultMoves.RIGHT);
+          this.add(MoveType.RIGHT);
           break;
 
         case "Backspace":
@@ -72,76 +63,19 @@ export default defineComponent({
       }
     },
 
-    add(move: DefaultMoves) {
-      if (this.gameStore.isBuilding) {
-        this.moves.push(move);
-      }
+    add(moveType: MoveType) {
+      this.gameStore.addMove(moveType);
     },
 
     remove(index?: number) {
-      if (this.gameStore.isBuilding) {
-        this.moves.splice(index ?? this.moves.length - 1, 1);
-      }
-    },
-
-    getIconName(move: DefaultMoves) {
-      switch (move) {
-        case DefaultMoves.UP:
-          return "arrow-up-bold";
-
-        case DefaultMoves.DOWN:
-          return "arrow-down-bold";
-
-        case DefaultMoves.LEFT:
-          return "arrow-left-bold";
-
-        case DefaultMoves.RIGHT:
-          return "arrow-right-bold";
-      }
-    },
-
-    togglePlay() {
-      if (this.gameStore.isBuilding) {
-        this.play()
-      } else if (this.gameStore.isPlaying) {
-        this.stop();
-      }
+      this.gameStore.removeMove(index);
     },
 
     play() {
-      if (this.gameStore.isBuilding) {
-        this.gameStore.setMoves(this.moves.map(move => {
-          switch (move) {
-            case DefaultMoves.UP:
-              return {
-                x: 0,
-                y: -1,
-              };
-
-            case DefaultMoves.DOWN:
-              return {
-                x: 0,
-                y: 1,
-              };
-
-            case DefaultMoves.LEFT:
-              return {
-                x: -1,
-                y: 0,
-              };
-
-            case DefaultMoves.RIGHT:
-              return {
-                x: 1,
-                y: 0,
-              };
-          }
-        }));
-        this.gameStore.play();
-      }
+      this.gameStore.play();
     },
 
-    stop() {
+    build() {
       this.gameStore.build();
     },
   }
@@ -151,18 +85,23 @@ export default defineComponent({
 <template>
   <div class="controls">
     <div class="controls__script">
-      <mdicon v-for="(move, index) in moves"
-              :key="index" size="80px"
-              :name="getIconName(move)"
+      <ControlButton v-for="(move, index) in gameStore.moves"
+              :key="index"
+              :moveType="move.type"
+              :moveState="move.state"
               @click="remove(index)"/>
     </div>
-    <div class="controls__play" :class="playButtonClasses" @click="togglePlay">{{ playButtonText }}</div>
+    <div class="controls__play">
+      <mdicon size="50px" name="play" v-if="gameStore.isBuilding" @click="play"/>
+      <mdicon size="50px" name="restart" v-if="gameStore.isFinished" @click="build"/>
+      <mdicon size="50px" name="skip-next" v-if="gameStore.isSuccess"/>
+    </div>
     <div class="controls__buttons">
-      <mdicon size="80px" :name="getIconName(DefaultMoves.UP)" @click="add(DefaultMoves.UP)"/>
+      <ControlButton :moveType="MoveType.UP" @click="add(MoveType.UP)"></ControlButton>
       <div style="width: 100%; height: 0px"></div>
-      <mdicon size="80px" :name="getIconName(DefaultMoves.LEFT)" @click="add(DefaultMoves.LEFT)"/>
-      <mdicon size="80px" :name="getIconName(DefaultMoves.DOWN)" @click="add(DefaultMoves.DOWN)"/>
-      <mdicon size="80px" :name="getIconName(DefaultMoves.RIGHT)" @click="add(DefaultMoves.RIGHT)"/>
+      <ControlButton :moveType="MoveType.LEFT" @click="add(MoveType.LEFT)"></ControlButton>
+      <ControlButton :moveType="MoveType.DOWN" @click="add(MoveType.DOWN)"></ControlButton>
+      <ControlButton :moveType="MoveType.RIGHT" @click="add(MoveType.RIGHT)"></ControlButton>
     </div>
   </div>
 </template>
@@ -192,21 +131,11 @@ export default defineComponent({
 }
 
 .controls__play {
-  padding: 5px 15px;
+  height: 50px;
+}
 
-  font-size: 30px;
-  text-align: center;
-
+.controls__play span {
   cursor: pointer;
-  user-select: none;
-}
-
-.controls__play, .controls__play--success {
-  background-color: green;
-}
-
-.controls__play--playing, .controls__play--failed {
-  background-color: red;
 }
 
 .controls__buttons {

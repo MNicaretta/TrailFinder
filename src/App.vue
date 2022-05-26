@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { GameState } from '@/consts/game_state';
 import { useGameStore } from '@/stores/game';
 
 import Tutorial from "./components/Tutorial.vue";

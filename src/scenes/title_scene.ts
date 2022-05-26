@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { Store } from 'pinia';
 
 import { useGameStore } from '@/stores/game';
-import { GameState } from '@/consts/game_state';
+import { GameState } from '@/consts/game';
 
 import Scene from './scene';
 

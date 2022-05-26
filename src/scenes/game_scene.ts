@@ -1,10 +1,11 @@
 import Scene from './scene';
-import type { Store } from 'pinia';
 
 import { useGameStore } from '@/stores/game';
-import { GameState } from '@/consts/game_state';
 
-import { TilesetConst } from '../consts/tileset';
+import { MoveState } from '@/models/move';
+
+import { GameResult, GameState } from '@/consts/game';
+import { TilesetConst } from '@/consts/tileset';
 
 export default class GameScene extends Scene {
   private start?: Phaser.Tilemaps.Tile;
@@ -85,9 +86,9 @@ export default class GameScene extends Scene {
   }
 
   update(_: number, delta: number) {
-    if (this.gameStore.state === GameState.BUILDING) {
+    if (this.gameStore.isBuilding) {
       this.reset();
-    } else if (this.gameStore.state === GameState.PLAYING) {
+    } else if (this.gameStore.isPlaying) {
       this.play(delta);
     }
   }
@@ -97,7 +98,7 @@ export default class GameScene extends Scene {
       this.grid.visible = false;
     }
 
-    const currentMove = this.gameStore.nextMove;
+    const currentMove = this.gameStore.currentMove;
 
     if (this.player && currentMove) {
       if (!currentMove.start_x && !currentMove.start_y) {
@@ -105,6 +106,8 @@ export default class GameScene extends Scene {
         currentMove.start_y = this.player.y;
         currentMove.end_x = this.player.x + TilesetConst.SIZE * currentMove.x;
         currentMove.end_y = this.player.y + TilesetConst.SIZE * currentMove.y;
+
+        currentMove.state = MoveState.RUNNING;
 
         // validar o movimento
 
@@ -122,7 +125,7 @@ export default class GameScene extends Scene {
       if (diff_x > 0 || diff_y > 0) {
         this.player.anims.stop();
         this.player.setFrame(0);
-        this.gameStore.shiftMove();
+        this.gameStore.classifyMove(MoveState.FINISHED);
       }
     } else {
       let isAtEnd = false;
@@ -137,6 +140,10 @@ export default class GameScene extends Scene {
         this.text.visible = true;
         this.text.text = isAtEnd ? 'SUCCESS' : 'FAILED';
       }
+
+      this.gameStore.finishLevel(
+        isAtEnd ? GameResult.SUCCESS : GameResult.FAILED
+      );
     }
 
     if (this.player && this.player.anims.isPlaying) {
