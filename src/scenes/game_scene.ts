@@ -2,9 +2,9 @@ import Scene from './scene';
 
 import { useGameStore } from '@/stores/game';
 
-import { MoveState } from '@/models/move';
+import { Move, MoveState } from '@/models/move';
 
-import { GameResult, GameState } from '@/consts/game';
+import { GameResult } from '@/consts/game';
 import { TilesetConst } from '@/consts/tileset';
 
 export default class GameScene extends Scene {
@@ -16,6 +16,8 @@ export default class GameScene extends Scene {
 
   private player?: Phaser.GameObjects.Sprite;
   private gameStore = useGameStore();
+
+  private summaryGrid?: Phaser.Tilemaps.Tile[];
 
   constructor() {
     super('Game');
@@ -98,18 +100,20 @@ export default class GameScene extends Scene {
       this.grid.visible = false;
     }
 
-    const currentMove = this.gameStore.currentMove;
+    const currentMove = this.gameStore.currentMove as Move;
 
     if (this.player && currentMove) {
       if (!currentMove.start_x && !currentMove.start_y) {
-        currentMove.start_x = this.player.x;
-        currentMove.start_y = this.player.y;
-        currentMove.end_x = this.player.x + TilesetConst.SIZE * currentMove.x;
-        currentMove.end_y = this.player.y + TilesetConst.SIZE * currentMove.y;
+        this.prepareMove(currentMove);
 
-        currentMove.state = MoveState.RUNNING;
+        if (!this.validateMove(currentMove)) {
+          this.player.anims.stop();
+          this.player.setFrame(0);
+          this.gameStore.classifyMove(MoveState.INVALID);
 
-        // validar o movimento
+          this.endLevel();
+          return;
+        }
 
         this.player.anims.play(currentMove.x ? 'walk' : 'climb');
         this.player.flipX = currentMove.x === -1;
@@ -128,27 +132,73 @@ export default class GameScene extends Scene {
         this.gameStore.classifyMove(MoveState.FINISHED);
       }
     } else {
-      let isAtEnd = false;
-
-      if (this.player && this.end) {
-        isAtEnd =
-          Math.floor(this.player.x / TilesetConst.SIZE) === this.end.x &&
-          Math.floor(this.player.y / TilesetConst.SIZE) === this.end.y;
-      }
-
-      if (this.text) {
-        this.text.visible = true;
-        this.text.text = isAtEnd ? 'SUCCESS' : 'FAILED';
-      }
-
-      this.gameStore.finishLevel(
-        isAtEnd ? GameResult.SUCCESS : GameResult.FAILED
-      );
+      this.endLevel();
     }
 
     if (this.player && this.player.anims.isPlaying) {
       this.player.x += (currentMove.x * delta) / 16;
       this.player.y += (currentMove.y * delta) / 16;
+    }
+  }
+
+  private endLevel() {
+    let isAtEnd = false;
+
+    if (this.player && this.end) {
+      isAtEnd =
+        Math.floor(this.player.x / TilesetConst.SIZE) === this.end.x &&
+        Math.floor(this.player.y / TilesetConst.SIZE) === this.end.y;
+    }
+
+    if (this.text) {
+      this.text.visible = true;
+      this.text.text = isAtEnd ? 'SUCCESS' : 'FAILED';
+    }
+
+    this.gameStore.finishLevel(
+      isAtEnd ? GameResult.SUCCESS : GameResult.FAILED
+    );
+  }
+
+  private validateMove(currentMove: Move) {
+    let validMove = false;
+
+    if (this.player) {
+      if (currentMove.x) {
+        const x = Math.floor(this.player.x / TilesetConst.SIZE) + currentMove.x;
+        const y = Math.floor(this.player.y / TilesetConst.SIZE) + 1;
+
+        validMove = !!this.summaryGrid?.find(
+          (tile) =>
+            tile.x === x &&
+            tile.y === y &&
+            TilesetConst.GROUND.includes(tile.index)
+        );
+      } else {
+        const x = Math.floor(this.player.x / TilesetConst.SIZE);
+        const y =
+          Math.floor(this.player.y / TilesetConst.SIZE) +
+          Math.max(currentMove.y, 0);
+
+        validMove = !!this.summaryGrid?.find(
+          (tile) =>
+            tile.x === x &&
+            tile.y === y &&
+            TilesetConst.LADDER.includes(tile.index)
+        );
+      }
+    }
+    return validMove;
+  }
+
+  private prepareMove(currentMove: Move) {
+    if (this.player) {
+      currentMove.start_x = this.player.x;
+      currentMove.start_y = this.player.y;
+      currentMove.end_x = this.player.x + TilesetConst.SIZE * currentMove.x;
+      currentMove.end_y = this.player.y + TilesetConst.SIZE * currentMove.y;
+
+      currentMove.state = MoveState.RUNNING;
     }
   }
 
@@ -166,6 +216,8 @@ export default class GameScene extends Scene {
   }
 
   private loadTilemap(key: string) {
+    this.summaryGrid = [];
+
     const tilemap = this.add.tilemap(
       key,
       TilesetConst.SIZE,
@@ -177,6 +229,14 @@ export default class GameScene extends Scene {
 
     tilemap.layers.forEach((layer) => {
       tilemap.createLayer(layer.name, tileset);
+
+      for (const row of layer.data)
+        for (const tile of row)
+          if (
+            TilesetConst.GROUND.includes(tile.index) ||
+            TilesetConst.LADDER.includes(tile.index)
+          )
+            this.summaryGrid?.push(tile);
     });
 
     this.start = tilemap.findByIndex(TilesetConst.START);
