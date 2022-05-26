@@ -2,16 +2,19 @@ import Phaser from 'phaser';
 
 import Scene from './scene';
 
-import Player0 from '../assets/images/player_0.png';
-import Player1 from '../assets/images/player_1.png';
-import Player2 from '../assets/images/player_2.png';
+import { GamePhases } from '@/consts/game';
 
-import Sheet from '../assets/images/sheet.png';
-import Title from '../assets/images/title.png';
-import Play from '../assets/images/play.png';
+import Player0 from '@/assets/images/player_0.png';
+import Player1 from '@/assets/images/player_1.png';
+import Player2 from '@/assets/images/player_2.png';
 
-import TitleBackground from '../assets/tilemaps/title_background.json';
-import Phase1 from '../assets/tilemaps/phase_1.json';
+import Sheet from '@/assets/images/sheet.png';
+import Title from '@/assets/images/title.png';
+import Play from '@/assets/images/play.png';
+
+import TitleBackground from '@/assets/tilemaps/title_background.json';
+import Phase1 from '@/assets/tilemaps/phase_1.json';
+import Phase2 from '@/assets/tilemaps/phase_2.json';
 
 export default class PreloaderScene extends Scene {
   private readyCount: number = 0;
@@ -82,7 +85,11 @@ export default class PreloaderScene extends Scene {
     this.load.image('play', Play);
 
     this.load.tilemapTiledJSON('title_background', TitleBackground);
+
     this.load.tilemapTiledJSON('phase_1', Phase1);
+    GamePhases.push('phase_1');
+    this.load.tilemapTiledJSON('phase_2', Phase2);
+    GamePhases.push('phase_2');
 
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 

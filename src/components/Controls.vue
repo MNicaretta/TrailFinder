@@ -78,6 +78,10 @@ export default defineComponent({
     build() {
       this.gameStore.build();
     },
+
+    nextPhase() {
+      this.gameStore.nextPhase();
+    },
   }
 })
 </script>
@@ -94,7 +98,7 @@ export default defineComponent({
     <div class="controls__play">
       <mdicon size="50px" name="play" v-if="gameStore.isBuilding" @click="play"/>
       <mdicon size="50px" name="restart" v-if="gameStore.isFinished" @click="build"/>
-      <mdicon size="50px" name="skip-next" v-if="gameStore.isSuccess"/>
+      <mdicon size="50px" name="skip-next" v-if="gameStore.isSuccess" @click="nextPhase"/>
     </div>
     <div class="controls__buttons">
       <ControlButton :moveType="MoveType.UP" @click="add(MoveType.UP)"></ControlButton>

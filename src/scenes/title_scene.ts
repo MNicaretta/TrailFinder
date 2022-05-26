@@ -61,6 +61,7 @@ export default class TitleScene extends Scene {
   }
 
   playTheGame() {
+    this.gameStore.build();
     this.scene.start('Game');
   }
 }

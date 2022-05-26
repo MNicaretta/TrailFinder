@@ -8,6 +8,8 @@ import { GameResult } from '@/consts/game';
 import { TilesetConst } from '@/consts/tileset';
 
 export default class GameScene extends Scene {
+  private tilemap?: Phaser.Tilemaps.Tilemap;
+
   private start?: Phaser.Tilemaps.Tile;
   private end?: Phaser.Tilemaps.Tile;
 
@@ -28,7 +30,7 @@ export default class GameScene extends Scene {
 
     this.cameras.main.setBackgroundColor(0x5d988d);
 
-    this.loadTilemap('phase_1');
+    this.loadTilemap();
 
     const walkConfig = {
       key: 'walk',
@@ -155,7 +157,7 @@ export default class GameScene extends Scene {
       this.text.text = isAtEnd ? 'SUCCESS' : 'FAILED';
     }
 
-    this.gameStore.finishLevel(
+    this.gameStore.finishPhase(
       isAtEnd ? GameResult.SUCCESS : GameResult.FAILED
     );
   }
@@ -203,6 +205,10 @@ export default class GameScene extends Scene {
   }
 
   private reset() {
+    if (!this.gameStore.isLoaded) {
+      this.loadTilemap();
+    }
+
     if (this.player) {
       this.player.anims.stop();
       this.player.setFrame(0);
@@ -215,20 +221,23 @@ export default class GameScene extends Scene {
     if (this.grid) this.grid.visible = true;
   }
 
-  private loadTilemap(key: string) {
+  private loadTilemap() {
+    if (this.tilemap) {
+      this.tilemap.destroy();
+    }
     this.summaryGrid = [];
 
-    const tilemap = this.add.tilemap(
-      key,
+    this.tilemap = this.add.tilemap(
+      this.gameStore.currentPhase,
       TilesetConst.SIZE,
       TilesetConst.SIZE,
       10,
       10
     );
-    const tileset = tilemap.addTilesetImage('sheet');
+    const tileset = this.tilemap.addTilesetImage('sheet');
 
-    tilemap.layers.forEach((layer) => {
-      tilemap.createLayer(layer.name, tileset);
+    for (const layer of this.tilemap.layers) {
+      this.tilemap.createLayer(layer.name, tileset).depth = -1;
 
       for (const row of layer.data)
         for (const tile of row)
@@ -237,11 +246,11 @@ export default class GameScene extends Scene {
             TilesetConst.LADDER.includes(tile.index)
           )
             this.summaryGrid?.push(tile);
-    });
+    }
 
-    this.start = tilemap.findByIndex(TilesetConst.START);
-    this.end = tilemap.findByIndex(TilesetConst.END);
+    this.start = this.tilemap.findByIndex(TilesetConst.START);
+    this.end = this.tilemap.findByIndex(TilesetConst.END);
 
-    this.gameStore.build();
+    this.gameStore.load();
   }
 }

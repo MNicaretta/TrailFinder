@@ -1,13 +1,16 @@
 import { defineStore } from 'pinia';
 
 import { Move, MoveState, type MoveType } from '@/models/move';
-import { GameResult, GameState } from '@/consts/game';
+import { GamePhases, GameResult, GameState } from '@/consts/game';
 
 export const useGameStore = defineStore({
   id: 'game',
   state: () => ({
     _state: GameState.LOADING,
     _result: GameResult.UNDEFINED,
+    _phases: GamePhases,
+    _phaseIndex: 0,
+    _loaded: false,
     _moves: [] as Move[],
     _moveIndex: 0,
   }),
@@ -19,6 +22,8 @@ export const useGameStore = defineStore({
     isSuccess: (state) =>
       state._state === GameState.FINISHED &&
       state._result === GameResult.SUCCESS,
+    currentPhase: (state) => state._phases[state._phaseIndex],
+    isLoaded: (state) => state._loaded,
     currentMove: (state) => state._moves[state._moveIndex],
     moves: (state) => state._moves,
   },
@@ -34,9 +39,18 @@ export const useGameStore = defineStore({
       this._state = GameState.BUILDING;
       this._moves.forEach((move) => move.reset());
     },
-    finishLevel(result = GameResult.UNDEFINED) {
+    finishPhase(result = GameResult.UNDEFINED) {
       this._state = GameState.FINISHED;
       this._result = result;
+    },
+    nextPhase() {
+      this._state = GameState.BUILDING;
+      this._loaded = false;
+      this._moves = [];
+      this._phaseIndex++;
+    },
+    load() {
+      this._loaded = true;
     },
     addMove(moveType: MoveType) {
       if (this.isBuilding) {
