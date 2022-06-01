@@ -12,4 +12,6 @@ export const TilesetConst = {
   WALK_END: 3,
   CLIMB_START: 18,
   CLIMB_END: 22,
+  OPEN_START: 0,
+  OPEN_END: 2,
 };

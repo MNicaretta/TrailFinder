@@ -30,16 +30,19 @@ export default defineComponent({
 
         case MoveType.RIGHT:
           return "arrow-right-bold";
+
+        case MoveType.OPEN:
+          return "key";
       }
     },
     iconClass() {
       switch (this.moveState) {
         case MoveState.IDLE:
         case MoveState.INVALID:
+        case MoveState.FINISHED:
           return null;
 
         case MoveState.RUNNING:
-        case MoveState.FINISHED:
           return 'control-button--active';
       }
     }

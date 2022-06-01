@@ -12,3 +12,5 @@ export enum GameResult {
 }
 
 export const GamePhases = [] as string[];
+
+export const GameChars = [] as string[];

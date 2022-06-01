@@ -3,6 +3,7 @@ export enum MoveType {
   DOWN,
   LEFT,
   RIGHT,
+  OPEN,
 }
 
 export enum MoveState {

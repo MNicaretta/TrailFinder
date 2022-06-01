@@ -58,7 +58,7 @@ export default defineComponent({
           break;
 
         case "Enter":
-          this.play();
+          this.gameStore.play();
           break;
       }
     },
@@ -69,18 +69,6 @@ export default defineComponent({
 
     remove(index?: number) {
       this.gameStore.removeMove(index);
-    },
-
-    play() {
-      this.gameStore.play();
-    },
-
-    build() {
-      this.gameStore.build();
-    },
-
-    nextPhase() {
-      this.gameStore.nextPhase();
     },
   }
 })
@@ -96,12 +84,14 @@ export default defineComponent({
               @click="remove(index)"/>
     </div>
     <div class="controls__play">
-      <mdicon size="50px" name="play" v-if="gameStore.isBuilding" @click="play"/>
-      <mdicon size="50px" name="restart" v-if="gameStore.isFinished" @click="build"/>
-      <mdicon size="50px" name="skip-next" v-if="gameStore.isSuccess" @click="nextPhase"/>
+      <mdicon size="50px" name="play" v-if="gameStore.isBuilding" @click="gameStore.play"/>
+      <mdicon size="50px" name="restart" v-if="gameStore.isFinished" @click="gameStore.build"/>
+      <mdicon size="50px" name="skip-next" v-if="gameStore.isSuccess" @click="gameStore.nextPhase"/>
     </div>
     <div class="controls__buttons">
+      <ControlButton :moveType="MoveType.OPEN" @click="add(MoveType.OPEN)"></ControlButton>
       <ControlButton :moveType="MoveType.UP" @click="add(MoveType.UP)"></ControlButton>
+      <ControlButton :moveType="MoveType.OPEN" @click="add(MoveType.OPEN)"></ControlButton>
       <div style="width: 100%; height: 0px"></div>
       <ControlButton :moveType="MoveType.LEFT" @click="add(MoveType.LEFT)"></ControlButton>
       <ControlButton :moveType="MoveType.DOWN" @click="add(MoveType.DOWN)"></ControlButton>

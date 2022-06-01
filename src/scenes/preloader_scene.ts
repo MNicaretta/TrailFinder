@@ -2,11 +2,13 @@ import Phaser from 'phaser';
 
 import Scene from './scene';
 
-import { GamePhases } from '@/consts/game';
+import { GameChars, GamePhases } from '@/consts/game';
 
 import Player0 from '@/assets/images/player_0.png';
 import Player1 from '@/assets/images/player_1.png';
 import Player2 from '@/assets/images/player_2.png';
+
+import Chest from '@/assets/images/chest.png';
 
 import Sheet from '@/assets/images/sheet.png';
 import Title from '@/assets/images/title.png';
@@ -15,6 +17,7 @@ import Play from '@/assets/images/play.png';
 import TitleBackground from '@/assets/tilemaps/title_background.json';
 import Phase1 from '@/assets/tilemaps/phase_1.json';
 import Phase2 from '@/assets/tilemaps/phase_2.json';
+import { TilesetConst } from '@/consts/tileset';
 
 export default class PreloaderScene extends Scene {
   private readyCount: number = 0;
@@ -70,16 +73,23 @@ export default class PreloaderScene extends Scene {
 
     this.load.spritesheet('player_0', Player0, {
       frameWidth: 64,
-      frameHeight: 64,
     });
+    GameChars.push('player_0');
+
     this.load.spritesheet('player_1', Player1, {
       frameWidth: 64,
-      frameHeight: 64,
     });
+    GameChars.push('player_1');
+
     this.load.spritesheet('player_2', Player2, {
       frameWidth: 64,
-      frameHeight: 64,
     });
+    GameChars.push('player_2');
+
+    this.load.spritesheet('chest', Chest, {
+      frameWidth: 32,
+    });
+
     this.load.image('sheet', Sheet);
     this.load.image('title', Title);
     this.load.image('play', Play);
@@ -140,6 +150,37 @@ export default class PreloaderScene extends Scene {
     this.progressBar?.destroy();
     this.progressBox?.destroy();
     this.percentText?.destroy();
+
+    for (const player of GameChars) {
+      this.anims.create({
+        key: 'walk--' + player,
+        frames: this.anims.generateFrameNumbers(player, {
+          start: TilesetConst.WALK_START,
+          end: TilesetConst.WALK_END,
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+      this.anims.create({
+        key: 'climb--' + player,
+        frames: this.anims.generateFrameNumbers(player, {
+          start: TilesetConst.CLIMB_START,
+          end: TilesetConst.CLIMB_END,
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
+
+    this.anims.create({
+      key: 'open',
+      frames: this.anims.generateFrameNumbers('chest', {
+        start: TilesetConst.OPEN_START,
+        end: TilesetConst.OPEN_END,
+      }),
+      frameRate: 5,
+    });
+
     this.ready();
   }
 

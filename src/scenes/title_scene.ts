@@ -30,7 +30,7 @@ export default class TitleScene extends Scene {
       tilemap.createLayer(layer.name, tileset);
     }
 
-    this.add.sprite(32 * 3, 32 * 6, 'player_1');
+    this.add.sprite(32 * 3, 32 * 6, this.gameStore.currentChar);
 
     this.title = this.add.image(width / 2, height * 0.15, 'title');
     this.scaleObject(this.title, width * 0.8, height * 0.3, 50, 1);

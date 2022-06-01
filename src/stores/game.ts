@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 
 import { Move, MoveState, type MoveType } from '@/models/move';
-import { GamePhases, GameResult, GameState } from '@/consts/game';
+import { GameChars, GamePhases, GameResult, GameState } from '@/consts/game';
 
 export const useGameStore = defineStore({
   id: 'game',
   state: () => ({
+    _char: 1,
     _state: GameState.LOADING,
     _result: GameResult.UNDEFINED,
     _phases: GamePhases,
@@ -15,6 +16,8 @@ export const useGameStore = defineStore({
     _moveIndex: 0,
   }),
   getters: {
+    currentChar: (state) => GameChars[state._char],
+    nextChar: (state) => GameChars[(state._char + 1) % GameChars.length],
     isLoading: (state) => state._state == GameState.LOADING,
     isBuilding: (state) => state._state === GameState.BUILDING,
     isPlaying: (state) => state._state === GameState.PLAYING,
@@ -28,6 +31,9 @@ export const useGameStore = defineStore({
     moves: (state) => state._moves,
   },
   actions: {
+    changeChar() {
+      this._char = (this._char + 1) % GameChars.length;
+    },
     play() {
       if (this.isBuilding) {
         this._moveIndex = 0;
