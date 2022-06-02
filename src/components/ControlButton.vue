@@ -6,6 +6,9 @@ import { MoveState, MoveType } from '@/models/move';
 
 export default defineComponent({
   props: {
+    size: {
+      type: String,
+    },
     moveType: {
       type: Number as PropType<MoveType>,
       required: true,
@@ -88,7 +91,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <mdicon :title="iconTooltip" size="80px" :name="iconName" :class="iconClass"/>
+  <mdicon :title="iconTooltip" :size="size ?? '80px'" :name="iconName" :class="iconClass"/>
 </template>
 
 <style scoped>

@@ -93,7 +93,7 @@ export default defineComponent({
         <ControlButton :moveType="MoveType.LOOP_END" @click="add(MoveType.LOOP_END)"></ControlButton>
       </div>
       <div class="controls__buttons__arrows">
-        <ControlButton :moveType="MoveType.UP" @click="add(MoveType.UP)"></ControlButton>
+        <ControlButton size="80px" :moveType="MoveType.UP" @click="add(MoveType.UP)"></ControlButton>
         <div style="width: 100%; height: 0px"></div>
         <ControlButton :moveType="MoveType.LEFT" @click="add(MoveType.LEFT)"></ControlButton>
         <ControlButton :moveType="MoveType.DOWN" @click="add(MoveType.DOWN)"></ControlButton>
