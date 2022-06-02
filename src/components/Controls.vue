@@ -12,6 +12,11 @@ export default defineComponent({
 
     return { gameStore, MoveType };
   },
+  data() {
+    return {
+      isPhaseMenuOpen: false,
+    }
+  },
   components: {
     ControlButton
   },
@@ -75,17 +80,32 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="controls">
-    <div class="controls__script">
-      <div class="controls__script__button" v-for="(move, index) in gameStore.moves" :key="index">
-        <ControlButton :moveType="move.type" :moveState="move.state" @click="remove(index)"/>
-        <input class="controls__script__button__input" v-if="move.type === MoveType.LOOP_START" v-model="move.repeat" :disabled="!gameStore.isBuilding" type="number"/>
+  <div class="controls" @click="isPhaseMenuOpen = false">
+    <div class="controls__phases-menu" title="Lista de Fases">
+      <mdicon class="controls__phases-menu__control" :name="isPhaseMenuOpen ? 'close' : 'menu'" @click.stop="isPhaseMenuOpen = !isPhaseMenuOpen"></mdicon>
+      <div v-if="isPhaseMenuOpen" class="controls__phases-selector" @click.stop>
+        <div class="controls__phases-selector__phase" v-for="(phase, index) in gameStore.phases" :key="index" @click="gameStore.changePhase(index)">
+          <span>{{ phase.name }}</span>
+          <div class="controls__phases-selector__phase__marks">
+            <mdicon v-if="phase.isFinished" name="check"></mdicon>
+            <mdicon v-if="phase.isMinMoves" name="medal"></mdicon>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="controls__script">
+      <div class="controls__script__buttons">
+        <div class="controls__script__button" v-for="(move, index) in gameStore.moves" :key="index">
+          <ControlButton :moveType="move.type" :moveState="move.state" @click="remove(index)"/>
+          <input class="controls__script__button__input" v-if="move.type === MoveType.LOOP_START" v-model="move.repeat" :disabled="!gameStore.isBuilding" type="number"/>
+        </div>
+      </div>
+      <mdicon class="controls__script__medal" size="30px" title="Melhor Script" name="medal" v-if="gameStore.isSuccess && gameStore.currentPhase.isMinMoves"/>
+    </div>
     <div class="controls__play">
-      <mdicon size="50px" name="play" v-if="gameStore.isBuilding" @click="gameStore.play"/>
-      <mdicon size="50px" name="restart" v-if="gameStore.isFinished" @click="gameStore.build"/>
-      <mdicon size="50px" name="skip-next" v-if="gameStore.isSuccess" @click="gameStore.nextPhase"/>
+      <mdicon size="50px" title="Iniciar Script" name="play" v-if="gameStore.isBuilding" @click="gameStore.play"/>
+      <mdicon size="50px" title="Reiniciar Fase" name="restart" v-if="gameStore.isFinished" @click="gameStore.build"/>
+      <mdicon size="50px" title="Próximo Nível" name="skip-next" v-if="gameStore.isSuccess" @click="gameStore.changePhase()"/>
     </div>
     <div class="controls__buttons">
       <div class="controls__buttons__loop">
@@ -117,18 +137,61 @@ export default defineComponent({
   padding: 7%;
 }
 
-.controls__script {
-  border: 5px solid var(--color-border);
+.controls__phases-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-align: right;
+  background: var(--color-background);
+  z-index: 1;
+}
 
-  width: 100%;
-  height: 40%;
+.controls__phases-menu__control {
+  cursor: pointer;
+}
 
-  padding: 3%;
-
-  overflow: auto;
-
+.controls__phases-selector {
+  user-select: none;
+  border: 2px solid var(--color-border);
+  margin-left: 10px;
+  padding: 5px;
+  gap: 10px;
   display: flex;
   flex-wrap: wrap;
+  padding: 10px;
+}
+
+.controls__phases-selector__phase {
+  cursor: pointer;
+  padding: 10px;
+  border: 3px solid var(--color-border);
+}
+
+.controls__phases-selector__phase__marks {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls__script {
+  position: relative;
+  border: 5px solid var(--color-border);
+  width: 100%;
+  height: 40%;
+  overflow: auto;
+}
+
+.controls__script__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 3%;
+}
+
+.controls__script__medal {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 15px);
 }
 
 .controls__script__button {
@@ -171,7 +234,7 @@ export default defineComponent({
   flex-wrap: wrap;
 }
 
-.controls__script span, .controls__buttons span {
+.controls__script__buttons span, .controls__buttons span {
   display: contents;
   cursor: pointer;
 }

@@ -10,7 +10,3 @@ export enum GameResult {
   SUCCESS,
   FAILED,
 }
-
-export const GamePhases = [] as string[];
-
-export const GameChars = [] as string[];

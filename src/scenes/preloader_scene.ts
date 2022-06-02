@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 
 import Scene from './scene';
 
-import { GameChars, GamePhases } from '@/consts/game';
 import { TilesetConst } from '@/consts/tileset';
 
 import Player0 from '@/assets/images/player_0.png';
@@ -23,6 +22,7 @@ import Phase4 from '@/assets/tilemaps/phase_4.json';
 import Phase5 from '@/assets/tilemaps/phase_5.json';
 import Phase6 from '@/assets/tilemaps/phase_6.json';
 import Phase7 from '@/assets/tilemaps/phase_7.json';
+import { GameChar, GamePhase } from '@/models/game';
 
 export default class PreloaderScene extends Scene {
   private readyCount: number = 0;
@@ -79,17 +79,17 @@ export default class PreloaderScene extends Scene {
     this.load.spritesheet('player_0', Player0, {
       frameWidth: 64,
     });
-    GameChars.push('player_0');
+    this.gameStore.addChar(new GameChar('player_0'));
 
     this.load.spritesheet('player_1', Player1, {
       frameWidth: 64,
     });
-    GameChars.push('player_1');
+    this.gameStore.addChar(new GameChar('player_1'));
 
     this.load.spritesheet('player_2', Player2, {
       frameWidth: 64,
     });
-    GameChars.push('player_2');
+    this.gameStore.addChar(new GameChar('player_2'));
 
     this.load.spritesheet('chest', Chest, {
       frameWidth: 32,
@@ -102,19 +102,19 @@ export default class PreloaderScene extends Scene {
     this.load.tilemapTiledJSON('title_background', TitleBackground);
 
     this.load.tilemapTiledJSON('phase_1', Phase1);
-    GamePhases.push('phase_1');
+    this.gameStore.addPhase(new GamePhase('phase_1', 4));
     this.load.tilemapTiledJSON('phase_2', Phase2);
-    GamePhases.push('phase_2');
+    this.gameStore.addPhase(new GamePhase('phase_2', 4));
     this.load.tilemapTiledJSON('phase_3', Phase3);
-    GamePhases.push('phase_3');
+    this.gameStore.addPhase(new GamePhase('phase_3', 9));
     this.load.tilemapTiledJSON('phase_4', Phase4);
-    GamePhases.push('phase_4');
+    this.gameStore.addPhase(new GamePhase('phase_4', 6));
     this.load.tilemapTiledJSON('phase_5', Phase5);
-    GamePhases.push('phase_5');
+    this.gameStore.addPhase(new GamePhase('phase_5', 6));
     this.load.tilemapTiledJSON('phase_6', Phase6);
-    GamePhases.push('phase_6');
+    this.gameStore.addPhase(new GamePhase('phase_6', 13));
     this.load.tilemapTiledJSON('phase_7', Phase7);
-    GamePhases.push('phase_7');
+    this.gameStore.addPhase(new GamePhase('phase_7', 7));
 
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
@@ -166,10 +166,10 @@ export default class PreloaderScene extends Scene {
     this.progressBox?.destroy();
     this.percentText?.destroy();
 
-    for (const player of GameChars) {
+    for (const player of this.gameStore.chars) {
       this.anims.create({
-        key: 'walk--' + player,
-        frames: this.anims.generateFrameNumbers(player, {
+        key: 'walk--' + player.name,
+        frames: this.anims.generateFrameNumbers(player.name, {
           start: TilesetConst.WALK_START,
           end: TilesetConst.WALK_END,
         }),
@@ -177,8 +177,8 @@ export default class PreloaderScene extends Scene {
         repeat: -1,
       });
       this.anims.create({
-        key: 'climb--' + player,
-        frames: this.anims.generateFrameNumbers(player, {
+        key: 'climb--' + player.name,
+        frames: this.anims.generateFrameNumbers(player.name, {
           start: TilesetConst.CLIMB_START,
           end: TilesetConst.CLIMB_END,
         }),

@@ -1,7 +1,5 @@
 import Scene from './scene';
 
-import { useGameStore } from '@/stores/game';
-
 import { Move, MoveState, MoveType } from '@/models/move';
 
 import { GameResult } from '@/consts/game';
@@ -22,7 +20,6 @@ export default class GameScene extends Scene {
   private changePlayer?: Phaser.GameObjects.Sprite;
 
   private player?: Phaser.GameObjects.Sprite;
-  private gameStore = useGameStore();
 
   private summaryGrid?: Phaser.Tilemaps.Tile[];
 
@@ -84,7 +81,8 @@ export default class GameScene extends Scene {
           this.gameStore.endLoop();
         } else {
           this.player.anims.play(
-            (currentMove.x ? 'walk--' : 'climb--') + this.gameStore.currentChar,
+            (currentMove.x ? 'walk--' : 'climb--') +
+              this.gameStore.currentChar.name,
             true
           );
           this.player.flipX = currentMove.x === -1;
@@ -268,7 +266,7 @@ export default class GameScene extends Scene {
       this.text.visible = false;
 
       this.changePlayer = this.add
-        .sprite(0, 0, this.gameStore.nextChar)
+        .sprite(0, 0, this.gameStore.nextChar.name)
         .setOrigin(0)
         .setScale(0.5)
         .setInteractive({ useHandCursor: true })
@@ -279,8 +277,8 @@ export default class GameScene extends Scene {
 
   private changeChar() {
     this.gameStore.changeChar();
-    this.changePlayer?.setTexture(this.gameStore.nextChar);
-    this.player?.setTexture(this.gameStore.currentChar);
+    this.changePlayer?.setTexture(this.gameStore.nextChar.name);
+    this.player?.setTexture(this.gameStore.currentChar.name);
   }
 
   private loadPlayer() {
@@ -288,7 +286,7 @@ export default class GameScene extends Scene {
       this.player = this.add.sprite(
         TilesetConst.SIZE * this.start.x + 16,
         TilesetConst.SIZE * this.start.y,
-        this.gameStore.currentChar
+        this.gameStore.currentChar.name
       );
       this.player.depth = 1;
     }
@@ -300,16 +298,15 @@ export default class GameScene extends Scene {
       this.player?.destroy();
       this.grid?.destroy();
       this.text?.destroy();
+      this.changePlayer?.destroy();
     }
     this.summaryGrid = [];
 
     this.ends.forEach((end) => end.sprite?.destroy());
     this.ends = [];
 
-    console.log(this.gameStore.currentPhase);
-
     this.tilemap = this.add.tilemap(
-      this.gameStore.currentPhase,
+      this.gameStore.currentPhase.name,
       TilesetConst.SIZE,
       TilesetConst.SIZE,
       10,

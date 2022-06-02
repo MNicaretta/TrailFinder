@@ -1,14 +1,17 @@
 import { defineStore } from 'pinia';
 
 import { Move, MoveState, type MoveType } from '@/models/move';
-import { GameChars, GamePhases, GameResult, GameState } from '@/consts/game';
+import { GameResult, GameState } from '@/consts/game';
+import type { GamePhase, GameChar } from '@/models/game';
 
 export const useGameStore = defineStore({
   id: 'game',
   state: () => ({
-    _char: 1,
+    _chars: [] as GameChar[],
+    _charIndex: 1,
     _state: GameState.LOADING,
     _result: GameResult.UNDEFINED,
+    _phases: [] as GamePhase[],
     _phaseIndex: 0,
     _loaded: false,
     _moves: [] as Move[],
@@ -16,8 +19,10 @@ export const useGameStore = defineStore({
     _loopStack: [] as { startIndex: number; count: number }[],
   }),
   getters: {
-    currentChar: (state) => GameChars[state._char],
-    nextChar: (state) => GameChars[(state._char + 1) % GameChars.length],
+    chars: (state) => state._chars,
+    currentChar: (state) => state._chars[state._charIndex],
+    nextChar: (state) =>
+      state._chars[(state._charIndex + 1) % state._chars.length],
     isLoading: (state) => state._state == GameState.LOADING,
     isBuilding: (state) => state._state === GameState.BUILDING,
     isPlaying: (state) => state._state === GameState.PLAYING,
@@ -25,7 +30,9 @@ export const useGameStore = defineStore({
     isSuccess: (state) =>
       state._state === GameState.FINISHED &&
       state._result === GameResult.SUCCESS,
-    currentPhase: (state) => GamePhases[state._phaseIndex % GamePhases.length],
+    phases: (state) => state._phases,
+    currentPhase: (state) =>
+      state._phases[state._phaseIndex % state._phases.length],
     isLoaded: (state) => state._loaded,
     currentMove: (state) => state._moves[state._moveIndex],
     nextMoves: (state) => state._moves.slice(state._moveIndex + 1),
@@ -33,8 +40,14 @@ export const useGameStore = defineStore({
     moves: (state) => state._moves,
   },
   actions: {
+    addPhase(phase: GamePhase) {
+      this._phases.push(phase);
+    },
+    addChar(char: GameChar) {
+      this._chars.push(char);
+    },
     changeChar() {
-      this._char = (this._char + 1) % GameChars.length;
+      this._charIndex = (this._charIndex + 1) % this._chars.length;
     },
     play() {
       if (this.isBuilding) {
@@ -50,12 +63,15 @@ export const useGameStore = defineStore({
     finishPhase(result = GameResult.UNDEFINED) {
       this._state = GameState.FINISHED;
       this._result = result;
+
+      this.currentPhase.movesCount =
+        this._result === GameResult.SUCCESS ? this.moves.length : 0;
     },
-    nextPhase() {
+    changePhase(index?: number) {
       this._state = GameState.BUILDING;
       this._loaded = false;
       this._moves = [];
-      this._phaseIndex++;
+      this._phaseIndex = index ? index : this._phaseIndex + 1;
     },
     load() {
       this._loaded = true;

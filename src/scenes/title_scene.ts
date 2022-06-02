@@ -1,16 +1,10 @@
 import Phaser from 'phaser';
-import type { Store } from 'pinia';
-
-import { useGameStore } from '@/stores/game';
-import { GameState } from '@/consts/game';
 
 import Scene from './scene';
 
 export default class TitleScene extends Scene {
   private title?: Phaser.GameObjects.Image;
   private play?: Phaser.GameObjects.Image;
-
-  private gameStore = useGameStore();
 
   constructor() {
     super('Title');
@@ -30,7 +24,7 @@ export default class TitleScene extends Scene {
       tilemap.createLayer(layer.name, tileset);
     }
 
-    this.add.sprite(32 * 3, 32 * 6, this.gameStore.currentChar);
+    this.add.sprite(32 * 3, 32 * 6, this.gameStore.currentChar.name);
 
     this.title = this.add.image(width / 2, height * 0.15, 'title');
     this.scaleObject(this.title, width * 0.8, height * 0.3, 50, 1);

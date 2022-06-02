@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 
+import { useGameStore } from '@/stores/game';
+
 export default class Scene extends Phaser.Scene {
   protected gameSize?: Phaser.Structs.Size;
+  protected gameStore = useGameStore();
 
   scaleObject(
     object: Phaser.GameObjects.GameObject &
