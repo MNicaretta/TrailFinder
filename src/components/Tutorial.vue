@@ -63,6 +63,8 @@ export default defineComponent({
       e as fases concluídas com o menos número de movimentos possível
       <mdicon size="30px" name="medal"></mdicon>.
     </p>
+    <br/>
+    <small>Game art by <i>Buch @ <a href="https://opengameart.org/users/buch">opengameart.org</a></i></small>
   </div>
 </template>
 

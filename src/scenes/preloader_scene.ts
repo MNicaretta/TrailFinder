@@ -25,6 +25,7 @@ import Phase7 from '@/assets/tilemaps/phase_7.json';
 import Phase8 from '@/assets/tilemaps/phase_8.json';
 import Phase9 from '@/assets/tilemaps/phase_9.json';
 import Phase10 from '@/assets/tilemaps/phase_10.json';
+import Phase11 from '@/assets/tilemaps/phase_11.json';
 import { GameChar, GamePhase } from '@/models/game';
 
 export default class PreloaderScene extends Scene {
@@ -124,6 +125,8 @@ export default class PreloaderScene extends Scene {
     this.gameStore.addPhase(new GamePhase('phase_9', 20));
     this.load.tilemapTiledJSON('phase_10', Phase10);
     this.gameStore.addPhase(new GamePhase('phase_10', 9));
+    this.load.tilemapTiledJSON('phase_11', Phase11);
+    this.gameStore.addPhase(new GamePhase('phase_11', 22));
 
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
