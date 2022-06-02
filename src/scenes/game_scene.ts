@@ -66,6 +66,9 @@ export default class GameScene extends Scene {
         }
 
         if (currentMove.type === MoveType.OPEN) {
+          this.player.anims.stop();
+          this.player.setFrame(0);
+
           const end = this.getCurrentEnd(currentMove);
           end?.sprite?.anims.play('open');
           this.time.addEvent({
@@ -101,22 +104,23 @@ export default class GameScene extends Scene {
           currentMove.y;
 
         if (diff_x > 0 || diff_y > 0) {
-          this.player.anims.stop();
-          this.player.setFrame(0);
+          this.player.x = currentMove.end_x;
+          this.player.y = currentMove.end_y;
           this.gameStore.classifyMove(MoveState.FINISHED);
+        } else {
+          this.player.x += (currentMove.x * delta) / 16;
+          this.player.y += (currentMove.y * delta) / 16;
         }
       }
     } else {
       this.endLevel();
     }
-
-    if (this.player && this.player.anims.isPlaying) {
-      this.player.x += (currentMove.x * delta) / 16;
-      this.player.y += (currentMove.y * delta) / 16;
-    }
   }
 
   private endLevel() {
+    this.player?.anims.stop();
+    this.player?.setFrame(0);
+
     const success = this.ends.reduce(
       (result, end) => result && !!end.open,
       true
@@ -301,6 +305,8 @@ export default class GameScene extends Scene {
 
     this.ends.forEach((end) => end.sprite?.destroy());
     this.ends = [];
+
+    console.log(this.gameStore.currentPhase);
 
     this.tilemap = this.add.tilemap(
       this.gameStore.currentPhase,

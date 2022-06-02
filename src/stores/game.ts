@@ -9,7 +9,6 @@ export const useGameStore = defineStore({
     _char: 1,
     _state: GameState.LOADING,
     _result: GameResult.UNDEFINED,
-    _phases: GamePhases,
     _phaseIndex: 0,
     _loaded: false,
     _moves: [] as Move[],
@@ -26,7 +25,7 @@ export const useGameStore = defineStore({
     isSuccess: (state) =>
       state._state === GameState.FINISHED &&
       state._result === GameResult.SUCCESS,
-    currentPhase: (state) => state._phases[state._phaseIndex],
+    currentPhase: (state) => GamePhases[state._phaseIndex % GamePhases.length],
     isLoaded: (state) => state._loaded,
     currentMove: (state) => state._moves[state._moveIndex],
     nextMoves: (state) => state._moves.slice(state._moveIndex + 1),

@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import Scene from './scene';
 
 import { GameChars, GamePhases } from '@/consts/game';
+import { TilesetConst } from '@/consts/tileset';
 
 import Player0 from '@/assets/images/player_0.png';
 import Player1 from '@/assets/images/player_1.png';
@@ -17,7 +18,11 @@ import Play from '@/assets/images/play.png';
 import TitleBackground from '@/assets/tilemaps/title_background.json';
 import Phase1 from '@/assets/tilemaps/phase_1.json';
 import Phase2 from '@/assets/tilemaps/phase_2.json';
-import { TilesetConst } from '@/consts/tileset';
+import Phase3 from '@/assets/tilemaps/phase_3.json';
+import Phase4 from '@/assets/tilemaps/phase_4.json';
+import Phase5 from '@/assets/tilemaps/phase_5.json';
+import Phase6 from '@/assets/tilemaps/phase_6.json';
+import Phase7 from '@/assets/tilemaps/phase_7.json';
 
 export default class PreloaderScene extends Scene {
   private readyCount: number = 0;
@@ -100,6 +105,16 @@ export default class PreloaderScene extends Scene {
     GamePhases.push('phase_1');
     this.load.tilemapTiledJSON('phase_2', Phase2);
     GamePhases.push('phase_2');
+    this.load.tilemapTiledJSON('phase_3', Phase3);
+    GamePhases.push('phase_3');
+    this.load.tilemapTiledJSON('phase_4', Phase4);
+    GamePhases.push('phase_4');
+    this.load.tilemapTiledJSON('phase_5', Phase5);
+    GamePhases.push('phase_5');
+    this.load.tilemapTiledJSON('phase_6', Phase6);
+    GamePhases.push('phase_6');
+    this.load.tilemapTiledJSON('phase_7', Phase7);
+    GamePhases.push('phase_7');
 
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
