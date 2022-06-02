@@ -61,7 +61,7 @@ export default defineComponent({
       Nesse menu serão exibidas todas as fases, indicando as concluídas
       <mdicon size="30px" name="check"></mdicon>
       e as fases concluídas com o menos número de movimentos possível
-      <mdicon size="30px" name="medal"></mdicon>
+      <mdicon size="30px" name="medal"></mdicon>.
     </p>
   </div>
 </template>

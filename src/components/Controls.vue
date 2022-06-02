@@ -97,7 +97,7 @@ export default defineComponent({
       <div class="controls__script__buttons">
         <div class="controls__script__button" v-for="(move, index) in gameStore.moves" :key="index">
           <ControlButton :moveType="move.type" :moveState="move.state" @click="remove(index)"/>
-          <input class="controls__script__button__input" v-if="move.type === MoveType.LOOP_START" v-model="move.repeat" :disabled="!gameStore.isBuilding" type="number"/>
+          <input class="controls__script__button__input" min="1" v-if="move.type === MoveType.LOOP_START" v-model="move.repeat" :disabled="!gameStore.isBuilding" type="number"/>
         </div>
       </div>
       <mdicon class="controls__script__medal" size="30px" title="Melhor Script" name="medal" v-if="gameStore.isSuccess && gameStore.currentPhase.isMinMoves"/>

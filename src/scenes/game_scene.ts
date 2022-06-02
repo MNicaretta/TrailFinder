@@ -253,20 +253,21 @@ export default class GameScene extends Scene {
         0x1f
       );
 
-      this.text = this.add.text(
-        this.gameSize.width / 2,
-        this.gameSize.height / 4,
-        'SUCCESS',
-        {
+      this.text = this.add
+        .text(this.gameSize.width / 2, this.gameSize.height / 4, 'SUCCESS', {
           fontFamily: 'Minecraft',
           fontSize: '40px',
-        }
-      );
-      this.text.setOrigin(0.5);
-      this.text.visible = false;
+        })
+        .setOrigin(0.5)
+        .setVisible(false)
+        .setDepth(10);
 
       this.changePlayer = this.add
-        .sprite(0, 0, this.gameStore.nextChar.name)
+        .sprite(
+          this.gameSize.width - TilesetConst.SIZE,
+          0,
+          this.gameStore.nextChar.name
+        )
         .setOrigin(0)
         .setScale(0.5)
         .setInteractive({ useHandCursor: true })
