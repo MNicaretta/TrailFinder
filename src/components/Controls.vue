@@ -162,7 +162,9 @@ export default defineComponent({
 }
 
 .controls__phases-selector__phase {
+  text-align: center;
   cursor: pointer;
+  width: 90px;
   padding: 10px;
   border: 3px solid var(--color-border);
 }
