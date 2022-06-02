@@ -4,6 +4,8 @@ export enum MoveType {
   LEFT,
   RIGHT,
   OPEN,
+  LOOP_START,
+  LOOP_END,
 }
 
 export enum MoveState {
@@ -21,6 +23,8 @@ export class Move {
   private _end_y: number = 0;
 
   private _state: MoveState = MoveState.IDLE;
+
+  private _repeat: number = 2;
 
   public constructor(private _type: MoveType) {}
 
@@ -83,6 +87,13 @@ export class Move {
   }
   public set state(value: MoveState) {
     this._state = value;
+  }
+
+  public get repeat(): number {
+    return this._repeat;
+  }
+  public set repeat(value: number) {
+    this._repeat = value;
   }
 
   public reset() {

@@ -14,6 +14,7 @@ export const useGameStore = defineStore({
     _loaded: false,
     _moves: [] as Move[],
     _moveIndex: 0,
+    _loopStack: [] as { startIndex: number; count: number }[],
   }),
   getters: {
     currentChar: (state) => GameChars[state._char],
@@ -28,6 +29,8 @@ export const useGameStore = defineStore({
     currentPhase: (state) => state._phases[state._phaseIndex],
     isLoaded: (state) => state._loaded,
     currentMove: (state) => state._moves[state._moveIndex],
+    nextMoves: (state) => state._moves.slice(state._moveIndex + 1),
+    previousMoves: (state) => state._moves.slice(0, state._moveIndex),
     moves: (state) => state._moves,
   },
   actions: {
@@ -71,6 +74,31 @@ export const useGameStore = defineStore({
     classifyMove(state: MoveState) {
       this.currentMove.state = state;
       this._moveIndex++;
+    },
+    startLoop() {
+      this._loopStack.unshift({ startIndex: this._moveIndex, count: 0 });
+      this._moveIndex++;
+    },
+    endLoop() {
+      const loop = this._loopStack[0];
+      if (loop) {
+        loop.count++;
+
+        const startLoopMove = this._moves[loop.startIndex];
+
+        if (loop.count < startLoopMove.repeat) {
+          this.currentMove.state = MoveState.FINISHED;
+          this._moves
+            .slice(loop.startIndex + 1, this._moveIndex + 1)
+            .forEach((move) => move.reset());
+          this._moveIndex = loop.startIndex + 1;
+        } else {
+          this.currentMove.state = MoveState.FINISHED;
+          startLoopMove.state = MoveState.FINISHED;
+          this._loopStack.splice(0, 1);
+          this._moveIndex++;
+        }
+      }
     },
   },
 });

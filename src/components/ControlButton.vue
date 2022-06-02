@@ -14,6 +14,10 @@ export default defineComponent({
       type: Number as PropType<MoveState>,
       default: MoveState.IDLE,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
   },
 
   computed: {
@@ -33,6 +37,12 @@ export default defineComponent({
 
         case MoveType.OPEN:
           return "key";
+
+        case MoveType.LOOP_START:
+          return "arrow-expand-right";
+
+        case MoveType.LOOP_END:
+          return "arrow-expand-left";
       }
     },
     iconClass() {
@@ -43,19 +53,46 @@ export default defineComponent({
           return null;
 
         case MoveState.RUNNING:
-          return 'control-button--active';
+          return 'control-button__button--active';
       }
+    },
+    iconTooltip() {
+      switch (this.moveType) {
+        case MoveType.UP:
+          return "Mover para CIMA";
+
+        case MoveType.DOWN:
+          return "Mover para BAIXO";
+
+        case MoveType.LEFT:
+          return "Mover para ESQUERDA";
+
+        case MoveType.RIGHT:
+          return "Mover para DIREITA";
+
+        case MoveType.OPEN:
+          return "Abrir BAÚ";
+
+        case MoveType.LOOP_START:
+          return "INÍCIO do Laço de Repetição";
+
+        case MoveType.LOOP_END:
+          return "FIM do Laço de Repetição";
+      }
+    },
+    isLoopStart() {
+      return !this.disabled && this.moveType === MoveType.LOOP_START;
     }
   }
 })
 </script>
 
 <template>
-  <mdicon size="80px" :name="iconName" :class="iconClass"/>
+  <mdicon :title="iconTooltip" size="80px" :name="iconName" :class="iconClass"/>
 </template>
 
 <style scoped>
-.control-button--active {
+.control-button__button--active {
   color: var(--color-heading);
 }
 </style>

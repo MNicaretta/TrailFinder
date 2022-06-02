@@ -75,6 +75,10 @@ export default class GameScene extends Scene {
               this.gameStore.classifyMove(MoveState.FINISHED);
             },
           });
+        } else if (currentMove.type === MoveType.LOOP_START) {
+          this.gameStore.startLoop();
+        } else if (currentMove.type === MoveType.LOOP_END) {
+          this.gameStore.endLoop();
         } else {
           this.player.anims.play(
             (currentMove.x ? 'walk--' : 'climb--') + this.gameStore.currentChar,
@@ -84,7 +88,11 @@ export default class GameScene extends Scene {
         }
       }
 
-      if (currentMove.type !== MoveType.OPEN) {
+      if (
+        currentMove.type !== MoveType.OPEN &&
+        currentMove.type !== MoveType.LOOP_START &&
+        currentMove.type !== MoveType.LOOP_END
+      ) {
         const diff_x =
           (this.player.x - (currentMove.end_x ? currentMove.end_x : 0)) *
           currentMove.x;
@@ -124,15 +132,13 @@ export default class GameScene extends Scene {
     );
   }
 
-  private validateMove(currentMove: Move) {
-    let validMove = false;
-
+  private validateMove(currentMove: Move): boolean {
     if (this.player) {
       if (currentMove.x) {
         const x = Math.floor(this.player.x / TilesetConst.SIZE) + currentMove.x;
         const y = Math.floor(this.player.y / TilesetConst.SIZE) + 1;
 
-        validMove = !!this.summaryGrid?.find(
+        return !!this.summaryGrid?.find(
           (tile) =>
             tile.x === x &&
             tile.y === y &&
@@ -144,17 +150,44 @@ export default class GameScene extends Scene {
           Math.floor(this.player.y / TilesetConst.SIZE) +
           Math.max(currentMove.y, 0);
 
-        validMove = !!this.summaryGrid?.find(
+        return !!this.summaryGrid?.find(
           (tile) =>
             tile.x === x &&
             tile.y === y &&
             TilesetConst.LADDER.includes(tile.index)
         );
       } else if (currentMove.type === MoveType.OPEN) {
-        validMove = !!this.getCurrentEnd(currentMove);
+        return !!this.getCurrentEnd(currentMove);
+      } else if (currentMove.type === MoveType.LOOP_START) {
+        let index = 0;
+        for (const move of this.gameStore.nextMoves) {
+          if (move.type === MoveType.LOOP_START) {
+            index++;
+          } else if (move.type === MoveType.LOOP_END) {
+            if (index === 0) {
+              return true;
+            } else {
+              index--;
+            }
+          }
+        }
+      } else if (currentMove.type === MoveType.LOOP_END) {
+        let index = 0;
+        for (const move of this.gameStore.previousMoves.reverse()) {
+          if (move.type === MoveType.LOOP_END) {
+            index++;
+          } else if (move.type === MoveType.LOOP_START) {
+            if (index === 0) {
+              return true;
+            } else {
+              index--;
+            }
+          }
+        }
       }
     }
-    return validMove;
+
+    return false;
   }
 
   private getCurrentEnd(currentMove: Move) {
