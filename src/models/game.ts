@@ -1,10 +1,18 @@
 export class GamePhase {
   private _movesCount: number = 0;
 
-  public constructor(private _name: string, private _minMoves: number) {}
+  public constructor(
+    private _name: string,
+    private _thumbnail: string,
+    private _minMoves: number
+  ) {}
 
   public get name() {
     return this._name;
+  }
+
+  public get thumbnail() {
+    return this._thumbnail;
   }
 
   public get isFinished() {

@@ -40,6 +40,9 @@
 :root {
   --game-width: calc(100vw - var(--scrollbar-width));
   --game-height: 0vw;
+
+  --controls-width: calc(100vw - var(--game-height) - var(--scrollbar-width));
+  --base-button-size: calc(var(--controls-width) * 0.14);
 }
 
 @media (prefers-color-scheme: dark) {

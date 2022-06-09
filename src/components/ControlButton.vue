@@ -91,7 +91,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <mdicon :title="iconTooltip" :size="size ?? '80px'" :name="iconName" :class="iconClass"/>
+  <mdicon :title="iconTooltip" :size="size ?? '100%'" :name="iconName" :class="iconClass"/>
 </template>
 
 <style scoped>
