@@ -39,6 +39,20 @@ import Phase10 from '@/assets/tilemaps/phase_10.json';
 import Thumbnail10 from '@/assets/images/phase_10.png';
 import Phase11 from '@/assets/tilemaps/phase_11.json';
 import Thumbnail11 from '@/assets/images/phase_11.png';
+import Phase12 from '@/assets/tilemaps/phase_12.json';
+import Thumbnail12 from '@/assets/images/phase_12.png';
+import Phase13 from '@/assets/tilemaps/phase_13.json';
+import Thumbnail13 from '@/assets/images/phase_13.png';
+import Phase14 from '@/assets/tilemaps/phase_14.json';
+import Thumbnail14 from '@/assets/images/phase_14.png';
+import Phase15 from '@/assets/tilemaps/phase_15.json';
+import Thumbnail15 from '@/assets/images/phase_15.png';
+import Phase16 from '@/assets/tilemaps/phase_16.json';
+import Thumbnail16 from '@/assets/images/phase_16.png';
+import Phase17 from '@/assets/tilemaps/phase_17.json';
+import Thumbnail17 from '@/assets/images/phase_17.png';
+import Phase18 from '@/assets/tilemaps/phase_18.json';
+import Thumbnail18 from '@/assets/images/phase_18.png';
 
 export default class PreloaderScene extends Scene {
   private readyCount: number = 0;
@@ -122,33 +136,45 @@ export default class PreloaderScene extends Scene {
     this.load.on(Phaser.Loader.Events.PROGRESS, this.progress, this);
 
     this.load.on(Phaser.Loader.Events.COMPLETE, this.complete, this);
-
-    this.scale.on(Phaser.Scale.Events.RESIZE, this.resize, this);
   }
 
   private loadPhases() {
     this.load.tilemapTiledJSON('phase_1', Phase1);
-    this.gameStore.addPhase(new GamePhase('phase_1', Thumbnail1, 4));
+    this.gameStore.addPhase(new GamePhase('phase_1', Thumbnail1, Phase1));
     this.load.tilemapTiledJSON('phase_2', Phase2);
-    this.gameStore.addPhase(new GamePhase('phase_2', Thumbnail2, 4));
+    this.gameStore.addPhase(new GamePhase('phase_2', Thumbnail2, Phase2));
     this.load.tilemapTiledJSON('phase_3', Phase3);
-    this.gameStore.addPhase(new GamePhase('phase_3', Thumbnail3, 9));
+    this.gameStore.addPhase(new GamePhase('phase_3', Thumbnail3, Phase3));
     this.load.tilemapTiledJSON('phase_4', Phase4);
-    this.gameStore.addPhase(new GamePhase('phase_4', Thumbnail4, 6));
+    this.gameStore.addPhase(new GamePhase('phase_4', Thumbnail4, Phase4));
     this.load.tilemapTiledJSON('phase_5', Phase5);
-    this.gameStore.addPhase(new GamePhase('phase_5', Thumbnail5, 6));
+    this.gameStore.addPhase(new GamePhase('phase_5', Thumbnail5, Phase5));
     this.load.tilemapTiledJSON('phase_6', Phase6);
-    this.gameStore.addPhase(new GamePhase('phase_6', Thumbnail6, 13));
+    this.gameStore.addPhase(new GamePhase('phase_6', Thumbnail6, Phase6));
     this.load.tilemapTiledJSON('phase_7', Phase7);
-    this.gameStore.addPhase(new GamePhase('phase_7', Thumbnail7, 7));
+    this.gameStore.addPhase(new GamePhase('phase_7', Thumbnail7, Phase7));
     this.load.tilemapTiledJSON('phase_8', Phase8);
-    this.gameStore.addPhase(new GamePhase('phase_8', Thumbnail8, 16));
+    this.gameStore.addPhase(new GamePhase('phase_8', Thumbnail8, Phase8));
     this.load.tilemapTiledJSON('phase_9', Phase9);
-    this.gameStore.addPhase(new GamePhase('phase_9', Thumbnail9, 20));
+    this.gameStore.addPhase(new GamePhase('phase_9', Thumbnail9, Phase9));
     this.load.tilemapTiledJSON('phase_10', Phase10);
-    this.gameStore.addPhase(new GamePhase('phase_10', Thumbnail10, 9));
+    this.gameStore.addPhase(new GamePhase('phase_10', Thumbnail10, Phase10));
     this.load.tilemapTiledJSON('phase_11', Phase11);
-    this.gameStore.addPhase(new GamePhase('phase_11', Thumbnail11, 22));
+    this.gameStore.addPhase(new GamePhase('phase_11', Thumbnail11, Phase11));
+    this.load.tilemapTiledJSON('phase_12', Phase12);
+    this.gameStore.addPhase(new GamePhase('phase_12', Thumbnail12, Phase12));
+    this.load.tilemapTiledJSON('phase_13', Phase13);
+    this.gameStore.addPhase(new GamePhase('phase_13', Thumbnail13, Phase13));
+    this.load.tilemapTiledJSON('phase_14', Phase14);
+    this.gameStore.addPhase(new GamePhase('phase_14', Thumbnail14, Phase14));
+    this.load.tilemapTiledJSON('phase_15', Phase15);
+    this.gameStore.addPhase(new GamePhase('phase_15', Thumbnail15, Phase15));
+    this.load.tilemapTiledJSON('phase_16', Phase16);
+    this.gameStore.addPhase(new GamePhase('phase_16', Thumbnail16, Phase16));
+    this.load.tilemapTiledJSON('phase_17', Phase17);
+    this.gameStore.addPhase(new GamePhase('phase_17', Thumbnail17, Phase17));
+    this.load.tilemapTiledJSON('phase_18', Phase18);
+    this.gameStore.addPhase(new GamePhase('phase_18', Thumbnail18, Phase18));
   }
 
   progress(value: number) {
@@ -190,10 +216,6 @@ export default class PreloaderScene extends Scene {
   }
 
   complete() {
-    this.progressBar?.destroy();
-    this.progressBox?.destroy();
-    this.percentText?.destroy();
-
     for (const player of this.gameStore.chars) {
       this.anims.create({
         key: 'walk--' + player.name,
@@ -292,10 +314,5 @@ export default class PreloaderScene extends Scene {
 
   ready() {
     this.scene.start('Title');
-    this.readyCount++;
-
-    if (this.readyCount === 2) {
-      this.scene.start('Title');
-    }
   }
 }

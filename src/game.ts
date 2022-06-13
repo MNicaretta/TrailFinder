@@ -5,14 +5,9 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Trail Finder',
   type: Phaser.AUTO,
   scale: {
-    width: 320,
-    height: 320,
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      debug: true,
-    },
+    width: 1080,
+    height: 1080,
+    mode: Phaser.Scale.NONE,
   },
   parent: 'game',
   backgroundColor: '#000000',

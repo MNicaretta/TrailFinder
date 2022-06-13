@@ -13,11 +13,10 @@ export default class TitleScene extends Scene {
   create() {
     this.gameSize = this.sys.game.scale.gameSize;
 
-    const { width, height } = this.gameSize;
-
     this.cameras.main.setBackgroundColor(0x5d988d);
 
     const tilemap = this.add.tilemap('title_background', 32, 32, 10, 10);
+    this.game.scale.resize(tilemap.widthInPixels, tilemap.heightInPixels);
     const tileset = tilemap.addTilesetImage('sheet');
 
     for (const layer of tilemap.layers) {
@@ -25,6 +24,8 @@ export default class TitleScene extends Scene {
     }
 
     this.add.sprite(32 * 3, 32 * 6, this.gameStore.currentChar.name);
+
+    const { width, height } = this.gameSize;
 
     this.title = this.add.image(width / 2, height * 0.15, 'title');
     this.scaleObject(this.title, width * 0.8, height * 0.3, 50, 1);
@@ -34,24 +35,6 @@ export default class TitleScene extends Scene {
       .setInteractive({ useHandCursor: true })
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.playTheGame, this);
     this.scaleObject(this.play, width * 0.3, height / 2, 50, 1);
-  }
-
-  resize(gameSize: Phaser.Structs.Size) {
-    this.gameSize = gameSize;
-
-    const { width, height } = this.gameSize;
-
-    if (this.play) {
-      this.scaleObject(this.play, width * 0.3, height / 2, 50, 1);
-      this.play.x = width / 2;
-      this.play.y = height / 2;
-    }
-
-    if (this.title) {
-      this.scaleObject(this.title, width * 0.8, height * 0.3, 50, 1);
-      this.title.x = width / 2;
-      this.title.y = height * 0.15;
-    }
   }
 
   playTheGame() {

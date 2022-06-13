@@ -86,6 +86,7 @@
          "x":0,
          "y":0
         }],
+ "minmoves":20,
  "nextlayerid":13,
  "nextobjectid":1,
  "orientation":"orthogonal",
@@ -96,7 +97,7 @@
         {
          "columns":17,
          "firstgid":1,
-         "image":"..\/..\/..\/..\/TrailFinder\/src\/assets\/images\/sheet.png",
+         "image":"..\/images\/sheet.png",
          "imageheight":256,
          "imagewidth":544,
          "margin":0,

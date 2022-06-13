@@ -86,6 +86,7 @@
          "x":0,
          "y":0
         }],
+ "minmoves":7,
  "nextlayerid":9,
  "nextobjectid":1,
  "orientation":"orthogonal",

@@ -116,11 +116,13 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   padding: 10px;
+  max-height: calc((var(--controls-width) - 65px));
+  overflow: auto;
 }
 
 .controls__phases-selector__phase {
-  width: calc((var(--controls-width) - 65px) / 4);
-  height: calc((var(--controls-width) - 65px) / 4);
+  width: calc((var(--controls-width) - 90px) / 4);
+  height: calc((var(--controls-width) - 90px) / 4);
   cursor: pointer;
   background-color: #5d988d;
 }

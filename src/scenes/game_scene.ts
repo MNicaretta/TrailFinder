@@ -219,6 +219,7 @@ export default class GameScene extends Scene {
     }
 
     this.ends.forEach((end) => {
+      end.open = false;
       end.sprite?.destroy();
       end.sprite = this.add
         .sprite(end.tile.pixelX, end.tile.pixelY, 'chest')
@@ -310,8 +311,12 @@ export default class GameScene extends Scene {
       this.gameStore.currentPhase.name,
       TilesetConst.SIZE,
       TilesetConst.SIZE,
-      10,
-      10
+      this.gameStore.currentPhase.width,
+      this.gameStore.currentPhase.height
+    );
+    this.game.scale.resize(
+      this.tilemap.widthInPixels,
+      this.tilemap.heightInPixels
     );
     const tileset = this.tilemap.addTilesetImage('sheet');
 

@@ -1,11 +1,18 @@
 export class GamePhase {
   private _movesCount: number = 0;
+  private _minMoves: number;
+  private _width: number;
+  private _height: number;
 
   public constructor(
     private _name: string,
     private _thumbnail: string,
-    private _minMoves: number
-  ) {}
+    phase: { minmoves: number; width: number; height: number }
+  ) {
+    this._minMoves = phase.minmoves;
+    this._width = phase.width;
+    this._height = phase.height;
+  }
 
   public get name() {
     return this._name;
@@ -13,6 +20,14 @@ export class GamePhase {
 
   public get thumbnail() {
     return this._thumbnail;
+  }
+
+  public get width() {
+    return this._width;
+  }
+
+  public get height() {
+    return this._height;
   }
 
   public get isFinished() {

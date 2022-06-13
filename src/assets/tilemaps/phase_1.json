@@ -50,6 +50,7 @@
          "x":0,
          "y":0
         }],
+ "minmoves":4,
  "nextlayerid":6,
  "nextobjectid":1,
  "orientation":"orthogonal",
